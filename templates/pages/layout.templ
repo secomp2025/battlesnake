@@ -1,0 +1,104 @@
+package pages
+
+templ layout(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="theme-color" content="#ec4899"/>
+			<title>{ title }</title>
+			<link href="/static/style.css" rel="stylesheet"/>
+			<link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+			<link rel="icon" type="image/png" href="/static/favicon.png"/>
+			<script src="https://unpkg.com/htmx.org@2.0.3" crossorigin="anonymous"></script>
+			// <script src="/static/board_client.js"></script>
+		</head>
+		<body class="bg-gray-100 text-gray-900">
+			<!-- Toast container (playful, type-aware) -->
+			<div id="toast" class="fixed bottom-6 right-6 z-50 hidden max-w-sm" role="status" aria-live="polite">
+				<div id="toast-frame" class="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-lg">
+					<div id="toast-dot" class="h-2 w-2 mt-2 rounded-full bg-gray-400"></div>
+					<div class="text-sm text-gray-800" id="toast-text-wrap">
+						<p id="toast-message">Tudo certo.</p>
+					</div>
+					<button id="toast-close" class="ml-2 text-gray-400 hover:text-gray-600">&times;</button>
+				</div>
+			</div>
+			<script>
+				const el = document.getElementById('toast');
+				const msg = document.getElementById('toast-message');
+				const frame = document.getElementById('toast-frame');
+				const dot = document.getElementById('toast-dot');
+				const closeBtn = document.getElementById('toast-close');
+				let hideTimer;
+
+				function setToastType(type){
+					const t = (type||'').toString().toLowerCase();
+					// Reset
+					frame.classList.remove('border-emerald-200','border-rose-200','border-sky-200','border-gray-200');
+					dot.classList.remove('bg-emerald-500','bg-rose-500','bg-sky-500','bg-gray-400');
+					if (t === 'success') {
+						frame.classList.add('border-emerald-200');
+						dot.classList.add('bg-emerald-500');
+					} else if (t === 'error') {
+						frame.classList.add('border-rose-200');
+						dot.classList.add('bg-rose-500');
+					} else if (t === 'info' || t === '') {
+						frame.classList.add('border-sky-200');
+						dot.classList.add('bg-sky-500');
+					} else {
+						frame.classList.add('border-gray-200');
+						dot.classList.add('bg-gray-400');
+					}
+				}
+
+				function showToast(payload){
+					if (!el || !msg) return;
+					let text = '';
+					let type = '';
+					if (typeof payload === 'string') {
+						text = payload;
+						type = 'info';
+					} else if (payload && typeof payload === 'object') {
+						text = payload.message || payload.value || payload.text || '';
+						type = payload.type || 'info';
+					}
+					msg.textContent = (text || 'Tudo certo.').toString().slice(0, 500);
+					setToastType(type);
+					el.classList.remove('hidden');
+					clearTimeout(hideTimer);
+					hideTimer = setTimeout(() => { el.classList.add('hidden'); }, 5000);
+				}
+				function hideToast(){ if(el) el.classList.add('hidden'); }
+				if (closeBtn) closeBtn.addEventListener('click', hideToast);
+
+				document.body.addEventListener('htmx:afterOnLoad', function(evt){
+					try {
+						const xhr = evt.detail.xhr;
+						if (xhr && xhr.status >= 400) {
+							const text = xhr.responseText && xhr.responseText.trim() ? xhr.responseText : 'Ocorreu um erro ao processar sua requisição.';
+							showToast({ message: text, type: 'error' });
+						}
+					} catch(e) { /* no-op */ }
+				});
+				document.body.addEventListener('htmx:responseError', function(){
+					showToast({ message: 'Falha de rede ou erro do servidor.', type: 'error' });
+				});
+				document.body.addEventListener('show-toast', function(evt){
+					try {
+						const d = evt && evt.detail;
+						// d may be string or object
+						showToast(d);
+					} catch(e) {}
+				});
+			</script>
+			{ children... }
+			<footer class="pt-12 border-t pb-6 border-gray-200 bg-white/80 backdrop-blur">
+				<div class="mx-auto max-w-6xl px-6 py-4 text-center text-xs text-gray-500">
+					Este site é uma versão não oficial do Battlesnake e não tem qualquer vínculo com a equipe original do projeto.
+				</div>
+			</footer>
+		</body>
+	</html>
+}

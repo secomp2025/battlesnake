@@ -1,0 +1,68 @@
+package components
+
+import "strings"
+
+templ AppHeader(title string, showLogout bool) {
+	<header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200 shadow-sm">
+		<div class="h-1 w-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-indigo-500"></div>
+		<div class="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<div class="h-9 w-9 rounded-xl bg-gradient-to-br from-pink-600 to-rose-600 flex items-center justify-center text-white font-bold shadow-sm">🐍</div>
+				<h1 class="text-lg md:text-xl font-semibold tracking-tight">{ title }</h1>
+			</div>
+			if showLogout {
+				<form action="/logout" method="POST">
+					<button class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">Sair</button>
+				</form>
+			}
+		</div>
+	</header>
+}
+
+
+templ BoardPlaceholder() {
+    <section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
+        <div class="grid grid-cols-1 md:grid-cols-[1fr,360px] gap-6">
+            <div class="w-full">
+                <div class="bg-[#0d0a16] rounded-xl p-3 md:p-4">
+                    <div class="relative rounded-md overflow-hidden" style="height: 520px;">
+                        <div class="absolute inset-0" style="
+                            background-image:
+                                linear-gradient(#1f2937 1px, transparent 1px),
+                                linear-gradient(90deg, #1f2937 1px, transparent 1px);
+                            background-size: 40px 40px, 40px 40px;
+                            background-position: -1px -1px, -1px -1px;
+                            background-color: #374151;
+                        "></div>
+                    </div>
+                </div>
+            </div>
+            <aside class="space-y-4">
+                <h3 class="text-center text-sm font-bold text-gray-300">TURN 0</h3>
+                <div class="rounded-lg bg-[#0d0a16] text-white p-3">Board (mock)</div>
+            </aside>
+        </div>
+    </section>
+}
+
+// StatusBadge renders a status label with contextual styles
+// Allowed statuses: online, offline, loading (case-insensitive)
+templ StatusBadge(status string) {
+	if strings.ToLower(status) == "loading" {
+		<span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+			<span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+			Carregando
+		</span>
+	} else if strings.ToLower(status) == "online" {
+		<span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+			<span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+			Online
+		</span>
+	} else {
+		<span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold bg-rose-100 text-rose-800 border border-rose-200">
+			<span class="h-2 w-2 rounded-full bg-rose-500"></span>
+			Offline
+		</span>
+	}
+}
+

@@ -1,0 +1,8 @@
+/uploads
+/tailwindcss
+/board
+
+__pycache__
+
+*.log
+*.db

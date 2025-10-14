@@ -1,0 +1,203 @@
+package pages
+
+import "github.com/secomp2025/localsnake/templates/components"
+
+templ Dashboard(teamName string) {
+	@layout("Dashboard") {
+		<div class="min-h-screen w-full relative overflow-hidden">
+			<!-- Background playful blobs -->
+			<div class="pointer-events-none absolute inset-0 -z-10">
+				<div class="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl"></div>
+				<div class="absolute top-24 -right-20 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl"></div>
+				<div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl"></div>
+			</div>
+			@components.AppHeader("Battlesnake • Playground", true)
+			<main class="mx-auto max-w-6xl px-6 py-10 space-y-8">
+				<!-- Hero -->
+				<section class="rounded-3xl bg-white/80 backdrop-blur border border-pink-200/60 shadow-sm p-7">
+					<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+						<div class="space-y-2">
+							<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold">
+								<span>🐍</span>
+								<span>Bem-vindo, time</span>
+							</div>
+							<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">{ teamName }</h1>
+							<p class="text-sm text-gray-600">Envie a sua Snake e acompanhe o status em tempo real.</p>
+						</div>
+						<div class="flex items-center gap-3">
+							<span class="text-sm text-gray-500">Status</span>
+							<span id="snake-status" hx-get="/status" hx-trigger="load, every 1.5s" hx-swap="innerHTML">
+								@components.StatusBadge("loading")
+							</span>
+						</div>
+					</div>
+				</section>
+				<!-- Main grid: upload card -->
+				<div class="grid grid-cols-1 gap-8">
+					<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-8">
+						<div class="flex items-start gap-4 mb-6">
+							<div class="h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl">⬆️</div>
+							<div>
+								<h2 class="text-xl font-bold text-gray-900">Enviar sua Snake</h2>
+								<p class="text-sm text-gray-600">Solte o arquivo em qualquer lugar da tela ou use o botão abaixo.</p>
+							</div>
+						</div>
+						<form
+							id="upload-form"
+							action="/upload-snake"
+							method="POST"
+							enctype="multipart/form-data"
+							hx-post="/upload-snake"
+							hx-encoding="multipart/form-data"
+							hx-target="#upload-result"
+							hx-swap="innerHTML"
+							class="space-y-5"
+						>
+							<!-- Pretty drop zone -->
+							<div id="drop-zone" class="w-full rounded-2xl border-2 border-dashed border-gray-300 hover:border-pink-400 transition p-8 text-center bg-gray-50 cursor-pointer">
+								<div class="mx-auto mb-3 h-14 w-14 grid place-items-center rounded-2xl bg-white text-pink-600 shadow-sm">📁</div>
+								<p class="text-sm text-gray-600">Arraste e solte seu arquivo aqui</p>
+								<p class="text-xs text-gray-500">ou clique para selecionar do seu computador</p>
+								<input id="snake-file" type="file" name="snake" accept=".py,.js,.c" class="sr-only"/>
+							</div>
+							<div class="flex flex-wrap items-center gap-3">
+								<button id="upload-submit" type="submit" class="px-5 py-2.5 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition opacity-50 cursor-not-allowed" disabled>Enviar</button>
+								<span class="text-sm">Selecionado: <span id="selected-file" class="font-medium text-gray-900">Nenhum arquivo</span></span>
+								<span class="ml-auto text-xs text-gray-500">.py · .js · .c • Máx 2MB</span>
+							</div>
+						</form>
+						<div id="upload-result" class="mt-4 text-sm text-gray-700"></div>
+					</section>
+					<!-- Board preview -->
+					{{ boardData := components.BoardMockState() }}
+					<section class="rounded-3xl">
+						@components.Gameboard(11, 11, boardData)
+					</section>
+				</div>
+				<!-- Global drag/drop overlay (hidden by default) -->
+				<div id="drop-overlay" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm items-center justify-center">
+					<div class="rounded-2xl border-4 border-dashed border-white/70 text-white px-10 py-8 text-center">
+						<p class="text-lg font-semibold">Solte o arquivo em qualquer lugar para enviar</p>
+						<p class="text-sm opacity-90 mt-1">Formatos: .py, .js, .c • Máx 2MB</p>
+					</div>
+				</div>
+				<!-- Behavior -->
+				<script>
+					(function(){
+						var ALLOWED = ['.py','.js','.c'];
+						function hasAllowedExt(name){
+							var idx = name.lastIndexOf('.');
+							if (idx < 0) return false;
+							var ext = name.slice(idx).toLowerCase();
+							return ALLOWED.indexOf(ext) !== -1;
+						}
+
+						function setup(){
+							var input = document.getElementById('snake-file');
+							var btn = document.getElementById('upload-submit');
+							var nameEl = document.getElementById('selected-file');
+							var drop = document.getElementById('drop-zone');
+							var overlay = document.getElementById('drop-overlay');
+							var form = document.getElementById('upload-form');
+							if (!input || !btn || !nameEl || !drop) return;
+
+							function update(){
+								var f = input.files && input.files[0];
+								if (f){
+									btn.disabled = false;
+									btn.classList.remove('opacity-50','cursor-not-allowed');
+									nameEl.textContent = f.name;
+								} else {
+									btn.disabled = true;
+									btn.classList.add('opacity-50','cursor-not-allowed');
+									nameEl.textContent = 'Nenhum arquivo';
+								}
+							}
+
+							function showDrop(){ drop.classList.add('border-pink-400','bg-pink-50'); }
+							function hideDrop(){ drop.classList.remove('border-pink-400','bg-pink-50'); }
+
+							drop.addEventListener('click', function(){ input.click(); });
+							drop.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
+							drop.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
+							drop.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); hideDrop(); });
+							drop.addEventListener('drop', function(e){
+								e.preventDefault(); e.stopPropagation(); hideDrop();
+								var files = e.dataTransfer && e.dataTransfer.files;
+								if (!files || !files.length) return;
+								var f = files[0];
+								if (!hasAllowedExt(f.name)){
+									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+									return;
+								}
+								// Assign the dropped file to the input
+								try {
+									var dt = new DataTransfer();
+									dt.items.add(f);
+									input.files = dt.files;
+									update();
+								} catch(_) {
+									// Fallback: just show name and enable button
+									nameEl.textContent = f.name;
+									btn.disabled = false;
+									btn.classList.remove('opacity-50','cursor-not-allowed');
+								}
+							});
+
+							// Global overlay drag-n-drop for entire screen
+							var overCounter = 0; // handle nested dragenter/leaves
+							function showOverlay(){ if (overlay){ overlay.classList.remove('hidden'); overlay.classList.add('flex'); } }
+							function hideOverlay(){ if (overlay){ overlay.classList.add('hidden'); overlay.classList.remove('flex'); } }
+
+							document.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); overCounter++; showOverlay(); });
+							document.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); });
+							document.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); overCounter = Math.max(0, overCounter-1); if (overCounter === 0) hideOverlay(); });
+							document.addEventListener('drop', function(e){
+								e.preventDefault(); e.stopPropagation();
+								overCounter = 0; hideOverlay();
+								if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+								var f = e.dataTransfer.files[0];
+								if (!hasAllowedExt(f.name)){
+									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+									return;
+								}
+								// If dropped outside the form, still capture the file
+								try {
+									var dt = new DataTransfer();
+									dt.items.add(f);
+									input.files = dt.files;
+									update();
+								} catch(_) {
+									nameEl.textContent = f.name;
+									btn.disabled = false;
+									btn.classList.remove('opacity-50','cursor-not-allowed');
+								}
+							});
+
+							input.addEventListener('change', function(){
+								var f = input.files && input.files[0];
+								if (f && !hasAllowedExt(f.name)){
+									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+									input.value = '';
+								}
+								update();
+							});
+
+							// After HTMX upload completes, clear selection
+							if (form) {
+								form.addEventListener('htmx:afterOnLoad', function(){
+									try { input.value = ''; } catch(_){ }
+									update();
+								});
+							}
+
+							update();
+						}
+						if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
+					})();
+
+				</script>
+			</main>
+		</div>
+	}
+}

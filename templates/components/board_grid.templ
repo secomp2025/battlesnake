@@ -1,0 +1,64 @@
+package components
+
+import "fmt"
+
+templ BoardGridWithSize(w, h int, boardData BoardData) {
+	{{
+		count := w * h
+		idxs := make([]int, count)
+	}}
+	{{
+		for i := 0; i < count; i++ {
+			idxs[i] = i
+		}
+	}}
+	<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
+		<div class="grid grid-cols-2 md:grid-cols-[1fr,360px] gap-6">
+			<div class="w-full">
+				<div class="rounded-xl p-3 md:p-4">
+					{{ cell_style := fmt.Sprintf("grid-template-columns: repeat(%d, minmax(0,1fr));", w) }}
+					<div class="grid" style={ cell_style }>
+						for _, idx := range idxs {
+							{{
+								x := idx % w
+								y := idx / w
+								var specialPart bool = false
+							}}
+							for _, snake := range boardData.Snakes {
+								for _, body := range snake.Body {
+									if body.X == x && body.Y == y {
+										{{
+											snakeStyle := fmt.Sprintf("background-color: %s", snake.Color)
+										}}
+										<div class="aspect-square" style={ snakeStyle }></div>
+										{{
+											specialPart = true
+											break
+										}}
+									}
+								}
+							}
+							if !specialPart {
+								for _, food := range boardData.Foods {
+									if food.X == x && food.Y == y {
+										<div class="aspect-square" style="background-color: #f59e0b"></div>
+										{{
+											specialPart = true
+											break
+										}}
+									}
+								}
+							}
+							if !specialPart {
+								<div class="aspect-square m-0.5 rounded-sm bg-gray-200"></div>
+							}
+						}
+					</div>
+				</div>
+			</div>
+			<aside class="space-y-4">
+				<h3 class="text-center text-sm font-bold text-gray-300">TURN 0</h3>
+			</aside>
+		</div>
+	</section>
+}
