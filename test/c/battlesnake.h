@@ -1,5 +1,4 @@
 #pragma once
-#include <jansson.h>
 #include <stddef.h>
 
 // -------------------- Data structures --------------------
