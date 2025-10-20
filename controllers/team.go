@@ -15,6 +15,17 @@ func NewTeamController(db database.DBTX) *TeamController {
 	return &TeamController{queries: database.New(db)}
 }
 
+func (c *TeamController) GetTeam(ctx context.Context, id int64) (*database.Team, error) {
+	team_model, err := c.queries.GetTeam(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &team_model, nil
+}
+
 func (c *TeamController) GetTeamByCode(ctx context.Context, code_id int64) (*database.Team, error) {
 	team_model, err := c.queries.GetTeamByCode(ctx, code_id)
 	if err != nil {

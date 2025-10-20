@@ -40,3 +40,15 @@ svg.head.left.shadow {
 svg.head.right.shadow {
     filter: drop-shadow(0.4rem 0 0.2rem rgba(0, 0, 0, 0.3));
 }
+
+.text-outline {
+    text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+}
+
+.eliminated {
+    @apply text-neutral-500;
+}
+
+.highlighted {
+    @apply border-pink-500 bg-neutral-200;
+}

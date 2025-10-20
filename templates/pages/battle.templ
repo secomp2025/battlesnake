@@ -1,0 +1,14 @@
+package pages
+
+import "github.com/secomp2025/localsnake/templates/components"
+
+templ Battle(gameID string) {
+	@layout("Battle") {
+		{{ boardData := components.BoardMockState() }}
+		<div class="flex justify-center">
+			<section class="rounded-3xl  w-full md:min-w-[600px] md:w-9/12 p-10 md:p-20">
+				@components.Gameboard(11, 11, boardData, gameID)
+			</section>
+		</div>
+	}
+}

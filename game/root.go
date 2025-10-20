@@ -40,7 +40,7 @@ func CreateGame(snakes []Snake) (string, *BoardServer) {
 	}
 
 	if err := gameState.Initialize(); err != nil {
-		log.ERROR.Fatalf("Error initializing game: %v", err)
+		log.ERROR.Printf("Error initializing game: %v", err)
 	}
 
 	boardGame := board.Game{
@@ -60,7 +60,7 @@ func CreateGame(snakes []Snake) (string, *BoardServer) {
 	go func() {
 		defer boardServer.Shutdown()
 		if err := gameState.Run(boardGame, boardServer); err != nil {
-			log.ERROR.Fatalf("Error running game: %v", err)
+			log.ERROR.Printf("Error running game: %v", err)
 		}
 	}()
 

@@ -29,7 +29,7 @@ type SvgCalcParams struct {
 	Width        float64
 }
 
-func Gameboard(w, h int, boardData BoardData) templ.Component {
+func Gameboard(w, h int, boardData BoardData, gameID string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -63,20 +63,30 @@ func Gameboard(w, h int, boardData BoardData) templ.Component {
 			Height:       svgHeight,
 			Width:        svgWidth,
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6\"><div class=\"flex gap-4 mb-2 items-center w-full \"><div class=\"h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl\">▶️</div><h2 class=\"text-xl font-bold text-gray-900\">Simular</h2><div class=\"w-full flex items-center justify-end\"><button id=\"btn-refresh-game\" type=\"submit\" class=\"px-10 py-2.5 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition\">Atualizar</button></div></div><div class=\"flex gap-4 flex-row\"><div class=\"flex-shrik w-full\"><div class=\"w-full flex justify-center\"><svg role=\"button\" id=\"btn-first-frame\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"first\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Primeiro Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"18,7 18,21 10,14\" fill=\"#6B7280\"></polygon> <rect x=\"8\" y=\"7\" width=\"2\" height=\"14\" rx=\"1\" fill=\"#6B7280\"></rect></svg> <svg class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"prev\" id=\"btn-prev-frame\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Voltar um Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"17,7 17,21 11,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-play\" class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"play\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display: inline;\"><title>Play</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"11,8 11,20 19,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-pause\" role=\"button\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"pause\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display: none;\"><title>Pausar</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <rect x=\"9\" y=\"8\" width=\"3\" height=\"12\" rx=\"1\" fill=\"#6B7280\"></rect> <rect x=\"16\" y=\"8\" width=\"3\" height=\"12\" rx=\"1\" fill=\"#6B7280\"></rect></svg> <svg id=\"btn-next-frame\" role=\"button\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"next\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Avançar um Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"11,7 11,21 17,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-last-frame\" class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"last\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Último Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"10,7 10,21 18,14\" fill=\"#6B7280\"></polygon> <rect x=\"18\" y=\"7\" width=\"2\" height=\"14\" rx=\"1\" fill=\"#6B7280\"></rect></svg></div><svg id=\"gameboard\" class=\"gameboard\" viewBox=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if gameID == "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex gap-4 mb-2 items-center w-full \"><div class=\"h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl\">▶️</div><h2 class=\"text-xl font-bold text-gray-900\">Simular</h2><div class=\" flex flex-col gap-3 items-end w-full\"><button id=\"btn-refresh-game\" type=\"submit\" class=\"w-48 px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition\">Atualizar</button> <label for=\"ghost-checkbox\" class=\"flex items-center gap-2 cursor-pointer\" role=\"checkbox\" aria-checked=\"false\" aria-label=\"Simular com upload anterior\" title=\"Simular com upload anterior\">Upload anterior <input type=\"checkbox\" name=\"ghost\" id=\"ghost-checkbox\" class=\"hidden peer\"><div class=\"w-4 h-4 rounded-full bg-gray-200 peer-checked:bg-gradient-to-r from-pink-600 to-pink-800 shadow\"></div></label></div></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex gap-4 flex-row\"><div class=\"flex-shrik w-full\"><div class=\"w-full flex justify-center\"><svg role=\"button\" id=\"btn-first-frame\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"first\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Primeiro Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"18,7 18,21 10,14\" fill=\"#6B7280\"></polygon> <rect x=\"8\" y=\"7\" width=\"2\" height=\"14\" rx=\"1\" fill=\"#6B7280\"></rect></svg> <svg class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"prev\" id=\"btn-prev-frame\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Voltar um Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"17,7 17,21 11,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-play\" class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"play\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display: inline;\"><title>Play</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"11,8 11,20 19,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-pause\" role=\"button\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"pause\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" style=\"display: none;\"><title>Pausar</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <rect x=\"9\" y=\"8\" width=\"3\" height=\"12\" rx=\"1\" fill=\"#6B7280\"></rect> <rect x=\"16\" y=\"8\" width=\"3\" height=\"12\" rx=\"1\" fill=\"#6B7280\"></rect></svg> <svg id=\"btn-next-frame\" role=\"button\" class=\"playback-btn cursor-pointer mx-1\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"next\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Avançar um Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"11,7 11,21 17,14\" fill=\"#6B7280\"></polygon></svg> <svg id=\"btn-last-frame\" class=\"playback-btn cursor-pointer mx-1\" role=\"button\" width=\"28\" height=\"28\" viewBox=\"0 0 28 28\" data-action=\"last\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Último Frame</title><rect width=\"28\" height=\"28\" rx=\"6\" fill=\"#F3F4F6\"></rect> <polygon points=\"10,7 10,21 18,14\" fill=\"#6B7280\"></polygon> <rect x=\"18\" y=\"7\" width=\"2\" height=\"14\" rx=\"1\" fill=\"#6B7280\"></rect></svg></div><svg id=\"gameboard\" class=\"gameboard\" viewBox=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(svgViewBox)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 146, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 153, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -84,7 +94,34 @@ func Gameboard(w, h int, boardData BoardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</svg><script type=\"module\">\n\t\t\t\t    import initGameClient from \"/static/board_client.js\";\n\t\t\t\t\tlet gameClient = initGameClient({});\n\n\t\t\t\t\tconst btnRefreshGame = document.getElementById(\"btn-refresh-game\");\n\t\t\t\t\tbtnRefreshGame.addEventListener(\"click\", async () => {\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tlet res = await fetch(\"/create-game\", {\n\t\t\t\t\t\t\t\tmethod: \"POST\"\n\t\t\t\t\t\t\t})\n\n\t\t\t\t\t\t\tlet gameId = await res.text();\n\n\t\t\t\t\t\t\tawait gameClient.connect(`/game/${gameId}`);\n\t\t\t\t\t\t} catch (err) {\n\t\t\t\t\t\t\tconsole.error(\"[Refresh] Error creating game:\", err);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\n\n\t\t\t\t</script></div><aside class=\"max-w-sm w-full flex flex-col\"><h3 class=\"text-lg font-semibold text-gray-900 mb-2\">Turno 0</h3><div class=\"space-y-2\"><div class=\"flex items-center gap-2\"><div class=\"h-5 w-5 rounded bg-red-500 grid place-items-center text-white text-xs font-bold\">🍎</div><span class=\"text-sm text-gray-700\">Comida</span></div></div></aside></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</svg></div><aside id=\"scoreboard\" class=\"max-w-sm w-full flex flex-col\"><h3 class=\"text-lg font-semibold text-gray-900 mb-2\">Turno <span id=\"scoreboard-turn\">0</span></h3><div id=\"scoreboard-snakes\"></div></aside></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if gameID == "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script type=\"module\">\n\t\t\t\timport initGameClient from \"/static/board_client.js\";\n\t\t\t\timport initScoreboard from \"/static/scoreboard.js\";\n\n\t\t\t\tlet scoreboard = initScoreboard();\n\n\t\t\t\tlet gameClient = initGameClient({\n\t\t\t\t\tonRenderFrame: scoreboard.updateScoreboard,\n\t\t\t\t});\n\n\t\t\t\tconst btnRefreshGame = document.getElementById(\"btn-refresh-game\");\n\t\t\t\tif (btnRefreshGame) {\n\t\t\t\t\tbtnRefreshGame.addEventListener(\"click\", async () => {\n\t\t\t\t\t\tconst ghost = document.getElementById(\"ghost-checkbox\").checked;\n\t\t\t\t\t\tfetch(\"/create-game?ghost=\" + ghost, {\n\t\t\t\t\t\t\tmethod: \"POST\"\n\t\t\t\t\t\t}).then((res) => {\n\t\t\t\t\t\t\t// if no content\n\t\t\t\t\t\t\tif (res.status == 204) {\n\t\t\t\t\t\t\t\tthrow new Error(\"Nenhuma Snake online\");\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tif (res.status != 201) {\n\t\t\t\t\t\t\t\tthrow new Error(\"Erro ao criar jogo\");\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\treturn res.text();\n\t\t\t\t\t\t}).then(async (gameId) => {\n\t\t\t\t\t\t\tawait gameClient.connect(`/game/${gameId}`).catch((err) => {\n\t\t\t\t\t\t\t\tconsole.error(\"[Refresh] Error connecting to game:\", err);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}).catch((err) => {\n\t\t\t\t\t\t\tshowToast({message: err.message, type: \"error\"});\n\t\t\t\t\t\t});\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t</script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<script type=\"module\">\n\t\t\t\tlet gameid = ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(gameID)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 201, Col: 26}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, ";\n\t\t\t\timport initGameClient from \"/static/board_client.js\";\n\t\t\t\timport initScoreboard from \"/static/scoreboard.js\";\n\n\t\t\t\tlet scoreboard = initScoreboard();\n\n\t\t\t\tlet gameClient = initGameClient({\n\t\t\t\t\tonRenderFrame: scoreboard.updateScoreboard,\n\t\t\t\t\tclearStorage: true\n\t\t\t\t});\n\n\t\t\t\tgameClient.connect(`/game/${gameid}`).catch((err) => {\n\t\t\t\t\tconsole.error(\"[Refresh] Error connecting to game:\", err);\n\t\t\t\t});\n\t\t\t</script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

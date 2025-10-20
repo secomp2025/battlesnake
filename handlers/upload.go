@@ -154,7 +154,7 @@ func saveSnakeFile(teamCod string, teamCode string, w http.ResponseWriter, ext s
 
 	// If a current snake already exists (any allowed ext), move it to snake_prev.<ext>
 	// Keep only one previous version.
-	for _, e := range []string{".py", ".js", ".c"} {
+	for _, e := range []string{".py", ".js", ".c", ".so"} {
 		old := filepath.Join(dir, "snake"+e)
 		if _, statErr := os.Stat(old); statErr == nil {
 			prev := filepath.Join(dir, "snake_prev"+e)
@@ -213,5 +213,6 @@ func saveSnakeFile(teamCod string, teamCode string, w http.ResponseWriter, ext s
 		fmt.Fprint(w, "Falha ao mover arquivo para destino")
 		return "", true
 	}
+
 	return dstPath, false
 }

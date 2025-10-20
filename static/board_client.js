@@ -27,14 +27,6 @@ class Point {
   }
 }
 
-class SvgCalcResult {
-  constructor(x, y, width, height) {
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
-  }
-}
 
 class SvgPoint {
   constructor(x, y) {
@@ -129,6 +121,34 @@ async function fetchCustomizationSvgDef(type, name) {
   return mediaCache[mediaPath];
 }
 
+function ghostColor(hexColor, factor = 0.6) {
+  if (hexColor.startsWith('#')) hexColor = hexColor.slice(1);
+  if (hexColor.length !== 6) throw new Error("Color must be in RRGGBB format");
+
+  const r = parseInt(hexColor.slice(0, 2), 16);
+  const g = parseInt(hexColor.slice(2, 4), 16);
+  const b = parseInt(hexColor.slice(4, 6), 16);
+
+  // Compute brightness (0–255)
+  const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+  let newR, newG, newB;
+
+  if (brightness > 230) {
+    // For near-white colors, fade toward light gray instead
+    newR = Math.round(r * (1 - factor));
+    newG = Math.round(g * (1 - factor));
+    newB = Math.round(b * (1 - factor));
+  } else {
+    // Otherwise, fade toward white
+    newR = Math.round(r + (255 - r) * factor);
+    newG = Math.round(g + (255 - g) * factor);
+    newB = Math.round(b + (255 - b) * factor);
+  }
+
+  const toHex = (v) => v.toString(16).padStart(2, '0').toUpperCase();
+  return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
+}
 
 class SvgRenderer {
   constructor(svgCanvas) {
@@ -163,14 +183,18 @@ class SvgRenderer {
 
     this.svgCanvas.innerHTML = "";
 
-
-
     this.renderGrid();
+
+    for (let snake of frame.Data.Snakes) {
+      if (snake.Name.includes("(Ghost)")) {
+        snake.Color = ghostColor(snake.Color);
+      }
+    }
 
     // render eliminated snakes
     for (let snake of frame.Data.Snakes) {
       if (snake.Death != null) {
-        await this.renderSnake(snake);
+        await this.renderSnake(snake, 0.5);
       }
     }
 
@@ -180,6 +204,9 @@ class SvgRenderer {
         await this.renderSnake(snake);
       }
     }
+
+
+
 
     // render food
     for (let i = 0; i < frame.Data.Food.length; i++) {
@@ -577,6 +604,8 @@ export default function initGameClient({
   framesStorageKey = "playback_frames_v1",
   gameInfoStorageKey = "playback_game_info_v1",
   autoPlay = false,
+  clearStorage = false,
+  onRenderFrame = () => { },
 }) {
   const svgCanvas = document.getElementById(SVG_CANVAS_ID);
   if (!svgCanvas) {
@@ -584,6 +613,10 @@ export default function initGameClient({
     return;
   }
 
+  if (clearStorage) {
+    localStorage.removeItem(framesStorageKey);
+    localStorage.removeItem(gameInfoStorageKey);
+  }
 
   let ws = null;
 
@@ -672,6 +705,7 @@ export default function initGameClient({
             renderer.setGameInfo(gameInfo);
           } catch (err) {
             console.error("[WS] error:", err);
+            throw new Error("Snake offline ou servidor indisponível");
           }
         }
 
@@ -703,6 +737,7 @@ export default function initGameClient({
       };
     } catch (err) {
       console.warn("[WS] error:", err);
+      throw new Error("Snake offline ou servidor indisponível");
     }
   }
 
@@ -710,6 +745,7 @@ export default function initGameClient({
   async function renderFrame(frame) {
     console.log("[Render] frame:", frame);
     await renderer.renderFrame(frame);
+    onRenderFrame(frame);
   }
 
   async function pausePlayback() {
@@ -727,7 +763,7 @@ export default function initGameClient({
     if (isPlaying || frameTimer) return;
     frameTimer = setInterval(async () => {
       console.log("[Playback] frame:", playbackIndex);
-      if (playbackIndex >= frames.length) {
+      if (playbackIndex >= frames.length - 1) {
         if (!isConnected()) {
           console.log("[Playback] no more frames and not connected");
           stopPlayback();
@@ -744,7 +780,7 @@ export default function initGameClient({
   }
 
   async function nextFrame() {
-    if (playbackIndex >= frames.length) {
+    if (playbackIndex >= frames.length - 1) {
       if (!isConnected()) {
         stopPlayback();
         return;

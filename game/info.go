@@ -36,7 +36,7 @@ func NewMapInfoCommand() *cobra.Command {
 			if len(args) < 1 {
 				err := cmd.Help()
 				if err != nil {
-					log.ERROR.Fatal(err)
+					log.ERROR.Println(err)
 				}
 				return
 			}
@@ -60,7 +60,8 @@ func NewMapInfoCommand() *cobra.Command {
 func (m *mapInfo) display(id string) {
 	gameMap, err := maps.GetMap(id)
 	if err != nil {
-		log.ERROR.Fatalf("Failed to load game map %v: %v", id, err)
+		log.ERROR.Printf("Failed to load game map %v: %v", id, err)
+		return
 	}
 	meta := gameMap.Meta()
 	fmt.Println("Name:", meta.Name)

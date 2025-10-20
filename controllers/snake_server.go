@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/secomp2025/localsnake/database"
 	"github.com/secomp2025/localsnake/game"
@@ -37,6 +38,7 @@ type SnakeServerController struct {
 	pyServerPath string
 	jsServerPath string
 	cServerPath  string
+	cHeaderPath  string
 }
 
 type globalSnakeServerController struct {
@@ -58,6 +60,14 @@ func InitSnakeServerManager(staticFS fs.FS) {
 		return
 	}
 
+	serversDir := filepath.Join("servers")
+	if _, err := os.Stat(serversDir); err != nil {
+		if err := os.Mkdir(serversDir, 0755); err != nil {
+			log.Println("Error creating servers directory", err)
+			return
+		}
+	}
+
 	pyServerPath := filepath.Join("static", "code-templates", "py", "server.py")
 	pyServerFile, err := staticFS.Open(pyServerPath)
 	if err != nil {
@@ -66,9 +76,77 @@ func InitSnakeServerManager(staticFS fs.FS) {
 	}
 	defer pyServerFile.Close()
 
-	copyFile(pyServerFile, pyServerPath)
+	jsServerPath := filepath.Join("static", "code-templates", "js", "server.js")
+	jsServerFile, err := staticFS.Open(jsServerPath)
+	if err != nil {
+		log.Println("Error opening server file for snake", err)
+		return
+	}
+	defer jsServerFile.Close()
 
-	serverManager.controller = &SnakeServerController{httpClient: &http.Client{}, basePort: BASE_PORT, servers: make(map[int64]SnakeServer), reservedPorts: make(map[int]bool), pyServerPath: pyServerPath}
+	cServerPath := filepath.Join("static", "code-templates", "c", "server.c")
+	cServerFile, err := staticFS.Open(cServerPath)
+	if err != nil {
+		log.Println("Error opening server file for snake", err)
+		return
+	}
+	defer cServerFile.Close()
+
+	cHeaderPath := filepath.Join("static", "code-templates", "c", "battlesnake.h")
+	cHeaderFile, err := staticFS.Open(cHeaderPath)
+	if err != nil {
+		log.Println("Error opening header file for snake", err)
+		return
+	}
+	defer cHeaderFile.Close()
+
+	pyServerDir := filepath.Join(serversDir, "py")
+	jsServerDir := filepath.Join(serversDir, "js")
+	cServerDir := filepath.Join(serversDir, "c")
+
+	if _, err := os.Stat(pyServerDir); err != nil {
+		if err := os.MkdirAll(pyServerDir, 0755); err != nil {
+			log.Println("Error creating py server directory", err)
+			return
+		}
+	}
+	if _, err := os.Stat(jsServerDir); err != nil {
+		if err := os.MkdirAll(jsServerDir, 0755); err != nil {
+			log.Println("Error creating js server directory", err)
+			return
+		}
+	}
+
+	if _, err := os.Stat(cServerDir); err != nil {
+		if err := os.MkdirAll(cServerDir, 0755); err != nil {
+			log.Println("Error creating c server directory", err)
+			return
+		}
+	}
+
+	copyFile(pyServerFile, filepath.Join(pyServerDir, "server.py"))
+	copyFile(jsServerFile, filepath.Join(jsServerDir, "server.js"))
+	copyFile(cServerFile, filepath.Join(cServerDir, "server.c"))
+	copyFile(cHeaderFile, filepath.Join(cServerDir, "battlesnake.h"))
+
+	// compile
+	cCompServerPath := filepath.Join(cServerDir, "server")
+	cmd := exec.Command("gcc", filepath.Join(cServerDir, "server.c"), "-o", cCompServerPath, "-ljansson", "-lmicrohttpd")
+	if err := cmd.Run(); err != nil {
+		log.Println("Error compiling server file for snake", err)
+		return
+	}
+
+	serverManager.controller = &SnakeServerController{
+		httpClient:    &http.Client{},
+		basePort:      BASE_PORT,
+		servers:       make(map[int64]SnakeServer),
+		reservedPorts: make(map[int]bool),
+		pyServerPath:  pyServerPath,
+		jsServerPath:  jsServerPath,
+		cServerPath:   cCompServerPath,
+		cHeaderPath:   cHeaderPath,
+	}
 }
 
 func GetServerManager() *SnakeServerController {
@@ -143,20 +221,29 @@ func (c *SnakeServerController) ManageSnake(ctx context.Context, snake *database
 	var serverCommand *exec.Cmd
 
 	if strings.HasSuffix(snake.Path, ".py") {
-		serverCommand = exec.Command("python", c.pyServerPath, snake.Path, strconv.Itoa(port))
+		fmt.Println("Python snake")
+		serverCommand = exec.Command("python3", c.pyServerPath, snake.Path, strconv.Itoa(port))
 		serverCommand.Env = append(os.Environ(), "PYTHONUNBUFFERED=1")
 	} else if strings.HasSuffix(snake.Path, ".js") {
-		serverCommand = exec.Command("npm", "run", "serve", "--", snake.Path, strconv.Itoa(port))
-		serverCommand.Dir = c.jsServerPath
+		fmt.Println("JS snake", c.jsServerPath, snake.Path, strconv.Itoa(port))
+		serverCommand = exec.Command("node", c.jsServerPath, snake.Path, strconv.Itoa(port))
 	} else if strings.HasSuffix(snake.Path, ".c") {
 		// compile and run shared object
+		cHeaderDir := filepath.Dir(c.cHeaderPath)
+
 		sharedObjectPath := snake.Path[:len(snake.Path)-2] + ".so"
-		compileCmd := exec.Command("gcc", "-shared", "-o", sharedObjectPath, snake.Path)
+		log.Println("gcc", "-shared", "-I"+cHeaderDir, "-o", sharedObjectPath, snake.Path)
+		compileCmd := exec.Command("gcc", "-shared", "-I"+cHeaderDir, "-o", sharedObjectPath, snake.Path)
+		compileCmd.Stdout = os.Stdout
+		compileCmd.Stderr = os.Stderr
 		if err := compileCmd.Run(); err != nil {
 			return fmt.Errorf("error compiling snake %d: %w", snake.ID, err)
 		}
 
-		serverCommand = exec.Command("LD_PRELOAD="+sharedObjectPath, c.cServerPath, snake.Path, strconv.Itoa(port))
+		serverCommand = exec.Command(c.cServerPath, strconv.Itoa(port))
+		serverCommand.Env = append(os.Environ(), "LD_PRELOAD="+sharedObjectPath)
+
+		log.Println("SERVER_COMMAND: LD_PRELOAD="+sharedObjectPath, c.cServerPath, strconv.Itoa(port))
 	} else {
 		return fmt.Errorf("invalid snake file extension: %s", snake.Path)
 	}
@@ -164,7 +251,14 @@ func (c *SnakeServerController) ManageSnake(ctx context.Context, snake *database
 	serverCommand.Stdout = logFile
 	serverCommand.Stderr = logFile
 
-	serverCommand.Start()
+	fmt.Println("Starting snake server for snake", snake, "on port", port)
+	if err := serverCommand.Start(); err != nil {
+		log.Println("Error starting snake server for snake", snake, err)
+		return err
+	}
+
+	// give some time for the server to start
+	time.Sleep(300 * time.Millisecond)
 
 	log.Println("Snake server for snake", snake, "started on port", port)
 

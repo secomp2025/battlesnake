@@ -1,0 +1,241 @@
+package pages;
+
+import (
+	"github.com/secomp2025/localsnake/models"
+	"github.com/secomp2025/localsnake/templates/components"
+)
+
+templ Admin(teams []models.Team) {
+	@layout("Admin • Battlesnake") {
+		<div class="min-h-screen w-full relative overflow-hidden">
+			<div class="pointer-events-none absolute inset-0 -z-10">
+				<div class="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl"></div>
+				<div class="absolute top-24 -right-20 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl"></div>
+				<div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl"></div>
+			</div>
+			@components.AppHeader("Battlesnake • Admin", true)
+			<main class="mx-auto max-w-6xl px-6 py-10 space-y-8">
+				<div class="flex items-center justify-end">
+					<a href="/" class="inline-flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-800">
+						<span>Dashboard</span>
+						<span>↗</span>
+					</a>
+				</div>
+				<section class="rounded-3xl bg-white/80 backdrop-blur border border-pink-200/60 shadow-sm p-7">
+					<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+						<div class="space-y-2">
+							<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold">
+								<span>🛠️</span>
+								<span>Painel Administrativo</span>
+							</div>
+							<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">Times e Snakes</h1>
+							<p class="text-sm text-gray-600">Gerencie as snakes enviadas pelos times. Você pode forçar uma nova execução e selecionar múltiplas para criar partidas.</p>
+						</div>
+					</div>
+				</section>
+				<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-6">
+					<div class="flex items-center mb-3">
+						<div class="relative">
+							<input type="text" id="admin-search" placeholder="Buscar time..." class="max-w-64 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"/>
+							<span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">⌘K</span>
+						</div>
+					</div>
+					<div class="flex flex-wrap items-center gap-4 mb-4">
+						<label class="inline-flex items-center gap-2 text-sm text-gray-700">
+							<input id="select-all" type="checkbox" class="h-4 w-4 rounded border-gray-300"/>
+							Selecionar todos
+						</label>
+						<div class="ml-auto flex items-center gap-3">
+							<span id="selected-count" class="text-sm text-gray-500">0 selecionados</span>
+							<a role="button" id="bulk-create" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-700 transition opacity-50 cursor-not-allowed pointer-events-none" aria-disabled="true">
+								Criar jogo com selecionados
+							</a>
+						</div>
+					</div>
+					<div class="overflow-x-auto rounded-xl border border-gray-200">
+						<table class="min-w-full divide-y divide-gray-200">
+							<thead class="bg-gray-50">
+								<tr>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">
+										<span class="sr-only">Selecionar</span>
+									</th>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Time</th>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Código</th>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Snake</th>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
+									<th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Atualizado</th>
+									<th class="px-4 py-3 text-right text-xs font-semibold text-gray-600">Ações</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-gray-100 bg-white" id="teams-table-body">
+								for _, team := range teams {
+									<tr class="team-row">
+										<td class="px-4 py-3">
+											if team.Snake == nil {
+												<input type="checkbox" class="team-checkbox h-4 w-4 rounded border-gray-300 opacity-40 cursor-not-allowed" value={ team.ID } disabled title="Este time ainda não enviou uma snake"/>
+											} else {
+												<input type="checkbox" class="team-checkbox h-4 w-4 rounded border-gray-300" value={ team.Snake.ID }/>
+											}
+										</td>
+										<td class="px-4 py-3">
+											<div class="font-medium text-gray-900">{ team.Name }</div>
+										</td>
+										<td class="px-4 py-3">
+											<span class="inline-flex items-center gap-2 rounded-full px-2.5 font-mono  py-1 text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-200">{ team.Code }</span>
+										</td>
+										<td class="px-4 py-3 text-sm text-gray-700">
+											if team.Snake != nil {
+												<div class="inline-flex items-center gap-2">
+													<span class="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 border border-gray-200">{ team.Snake.Lang }</span>
+													<span class="text-xs text-gray-500">ID #{ team.Snake.ID }</span>
+												</div>
+											} else {
+												<span class="text-xs text-gray-400">Sem snake</span>
+											}
+										</td>
+										<td class="px-4 py-3 text-sm text-gray-600">
+											if team.Snake != nil {
+												if team.Snake.Status == "online" {
+													<span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">online</span>
+												} else if team.Snake.Status == "loading" {
+													<span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">loading</span>
+												} else {
+													<span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">offline</span>
+												}
+											} else {
+												<span class="text-xs text-gray-400">—</span>
+											}
+										</td>
+										<td class="px-4 py-3 text-sm text-gray-600">
+											if team.Snake != nil {
+												{ team.Snake.UpdatedAt.Format("2006-01-02 15:04") }
+											} else {
+												<span class="text-xs text-gray-400">—</span>
+											}
+										</td>
+										<td class="px-4 py-3">
+											<div class="flex items-center justify-end gap-2">
+												if team.Snake == nil {
+													<button class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-pink-600 text-white shadow hover:bg-pink-700 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+														Forçar rerun
+													</button>
+												} else {
+													<button
+														class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-pink-600 text-white shadow hover:bg-pink-700 transition rerun-btn"
+														data-snake-id={ team.Snake.ID }
+													>
+														Forçar rerun
+													</button>
+												}
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+					<div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+						<div>Dica: use a busca acima para filtrar por nome do time.</div>
+						<div>Total de times: { len(teams) }</div>
+					</div>
+				</section>
+				<script>
+                    (function(){
+                        function $(sel, ctx){ return (ctx||document).querySelector(sel); }
+                        function $all(sel, ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(sel)); }
+                        function updateSelected(){
+                            var boxes = $all('.team-checkbox:not(:disabled)');
+                            var checked = boxes.filter(function(b){ return b.checked; });
+
+                            var count = checked.length;
+                            var countEl = $('#selected-count');
+                            var bulkBtn = $('#bulk-create');
+                            if (countEl) countEl.textContent = (count || 0) + ' selecionados';
+                            if (bulkBtn){
+                                var href = '/battle?snake_ids=' + checked.map(function(b){ return b.value; }).join(',');
+                                if (count === 0) {
+									bulkBtn.removeAttribute('target');
+                                    bulkBtn.removeAttribute('href');
+                                    bulkBtn.setAttribute('aria-disabled','true');
+                                    bulkBtn.classList.add('opacity-50','cursor-not-allowed','pointer-events-none');
+                                } else {
+									bulkBtn.setAttribute('target', '_blank');
+                                    bulkBtn.setAttribute('href', href);
+                                    bulkBtn.removeAttribute('aria-disabled');
+                                    bulkBtn.classList.remove('opacity-50','cursor-not-allowed','pointer-events-none');
+                                }
+                            }
+                            var allBox = $('#select-all');
+                            if (allBox){ allBox.checked = (count > 0 && count === boxes.length); allBox.indeterminate = (count > 0 && count < boxes.length); }
+                        }
+                        function setup(){
+                            var allBox = document.getElementById('select-all');
+                            var table = document.getElementById('teams-table-body');
+                            var search = document.getElementById('admin-search');
+                            if (allBox){
+                                allBox.addEventListener('change', function(){
+                                    var boxes = $all('.team-checkbox:not(:disabled)');
+                                    boxes.forEach(function(b){ b.checked = allBox.checked; });
+                                    updateSelected();
+                                });
+                            }
+                            // Guard anchor navigation when disabled
+                            var bulkBtn = document.getElementById('bulk-create');
+                            if (bulkBtn){
+                                bulkBtn.addEventListener('click', function(e){
+                                    var disabled = bulkBtn.getAttribute('aria-disabled') === 'true';
+                                    if (disabled || !bulkBtn.getAttribute('href')){
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+                                });
+                            }
+                            document.addEventListener('click', function(e){
+                                var btn = e.target && e.target.closest ? e.target.closest('.rerun-btn') : null;
+                                if (!btn) return;
+                                e.preventDefault();
+                                var id = btn.getAttribute('data-snake-id');
+                                if (!id) return;
+                                btn.disabled = true;
+                                btn.classList.add('opacity-50','cursor-wait');
+                                fetch('/rerun', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ snake_id: Number(id) })
+                                }).then(function(res){
+                                    if (!res.ok) throw new Error('request failed');
+                                }).then(function(){
+                                    btn.textContent = 'Rerun solicitado';
+                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);
+                                }).catch(function(){
+                                    btn.textContent = 'Falha';
+                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);
+                                }).finally(function(){
+                                    btn.disabled = false;
+                                    btn.classList.remove('cursor-wait','opacity-50');
+                                });
+                            });
+                            document.addEventListener('change', function(e){
+                                if (e && e.target && e.target.classList && e.target.classList.contains('team-checkbox')){
+                                    updateSelected();
+                                }
+                            });
+                            if (search){
+                                search.addEventListener('input', function(){
+                                    var q = (search.value || '').toLowerCase();
+                                    $all('tr.team-row', table).forEach(function(row){
+                                        var nameEl = row.querySelector('td:nth-child(2) div');
+                                        var name = nameEl ? nameEl.textContent.toLowerCase() : '';
+                                        row.style.display = name.indexOf(q) >= 0 ? '' : 'none';
+                                    });
+                                });
+                            }
+                            updateSelected();
+                        }
+                        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
+                    })();
+                </script>
+			</main>
+		</div>
+	}
+}

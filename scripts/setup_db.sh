@@ -54,6 +54,12 @@ current=$(get_codes_count)
 
 log "Seeding codes... (current=$current, target=$TARGET)"
 
+# INSERT ADMIN CODE
+sqlite3 -batch -noheader "$DB_PATH" "INSERT OR IGNORE INTO codes (code) VALUES ('ADMBSNAKE');" >/dev/null
+
+# INSERT ADM TEAM
+sqlite3 -batch -noheader "$DB_PATH" "INSERT OR IGNORE INTO teams (name, code_id, is_admin) VALUES ('Administração', (SELECT id FROM codes WHERE code = 'ADMBSNAKE'), true);" >/dev/null
+
 while [ "$current" -lt "$TARGET" ]; do
   CODE=$(rand_code)
   # Use INSERT OR IGNORE to avoid duplicates; unique constraint on codes(code)
@@ -68,6 +74,7 @@ while [ "$current" -lt "$TARGET" ]; do
   # Optional small sleep to avoid tight loop
   # sleep 0.01
 done
+
 
 log "Done. Codes in DB: $current"
 

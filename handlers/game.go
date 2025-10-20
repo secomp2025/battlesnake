@@ -12,12 +12,6 @@ import (
 	"github.com/secomp2025/localsnake/game"
 )
 
-// type boardServerHandler struct {
-// 	game   board.Game
-// 	events chan board.GameEvent
-// 	done   chan bool
-// }
-
 type globalBoardServerHandler struct {
 	lock     sync.Mutex
 	handlers map[string]*game.BoardServer
@@ -32,7 +26,7 @@ func init() {
 	}
 }
 
-func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
+func CreateTeamGameHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -42,6 +36,11 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	if team_code == "" {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
+	}
+
+	var enableGhost bool
+	if ghost := r.URL.Query().Get("ghost"); ghost == "true" {
+		enableGhost = true
 	}
 
 	log.Println("creating game for team code: ", team_code)
@@ -62,9 +61,21 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	snakes := controllers.NewSnakeController(database.DB)
 	team_snakes, err := snakes.ListTeamSnakes(r.Context(), team.ID)
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	if len(team_snakes) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	if !enableGhost {
+		if len(team_snakes) > 1 {
+			// keep only the last snake, since snakes are ordered by update time (oldest first)
+			team_snakes = team_snakes[len(team_snakes)-1:]
+		}
 	}
 
 	var gameSnakes []game.Snake
@@ -83,6 +94,12 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	if len(gameSnakes) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 		return
+	}
+
+	if len(gameSnakes) > 1 {
+		// keep only the last snake, since snakes are ordered by update time (oldest first)
+		gameSnakes[0].Name = team.Name + " (Ghost)"
+		// gameSnakes[0].IsGhost = true
 	}
 
 	// games := controllers.NewGameController()

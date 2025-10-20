@@ -26,6 +26,7 @@ type Snake struct {
 type Team struct {
 	ID        int64
 	Name      string
+	IsAdmin   sql.NullBool
 	CodeID    int64
 	CreatedAt sql.NullTime
 }

@@ -14,7 +14,8 @@ func NewMapCommand() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			err := cmd.Help()
 			if err != nil {
-				log.ERROR.Fatal(err)
+				log.ERROR.Println(err)
+				return
 			}
 		},
 	}

@@ -40,5 +40,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// For now we mock the status; ensure it conforms to fixed values
-	templ.Handler(pages.Dashboard(team.Name)).ServeHTTP(w, r)
+    // Pass admin flag for conditional Admin nav on dashboard
+    isAdmin := team.IsAdmin.Valid && team.IsAdmin.Bool
+    templ.Handler(pages.Dashboard(team.Name, isAdmin)).ServeHTTP(w, r)
 }

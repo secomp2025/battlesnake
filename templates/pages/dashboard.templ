@@ -2,7 +2,7 @@ package pages
 
 import "github.com/secomp2025/localsnake/templates/components"
 
-templ Dashboard(teamName string) {
+templ Dashboard(teamName string, isAdmin bool) {
 	@layout("Dashboard") {
 		<div class="min-h-screen w-full relative overflow-hidden">
 			<!-- Background playful blobs -->
@@ -13,6 +13,15 @@ templ Dashboard(teamName string) {
 			</div>
 			@components.AppHeader("Battlesnake • Playground", true)
 			<main class="mx-auto max-w-6xl px-6 py-10 space-y-8">
+				<!-- Simple nav row -->
+				<div class="flex items-center justify-end">
+					if isAdmin {
+						<a href="/adm" class="inline-flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-800">
+							<span>Admin</span>
+							<span>↗</span>
+						</a>
+					}
+				</div>
 				<!-- Hero -->
 				<section class="rounded-3xl bg-white/80 backdrop-blur border border-pink-200/60 shadow-sm p-7">
 					<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -71,7 +80,7 @@ templ Dashboard(teamName string) {
 					<!-- Board preview -->
 					{{ boardData := components.BoardMockState() }}
 					<section class="rounded-3xl">
-						@components.Gameboard(11, 11, boardData)
+						@components.Gameboard(11, 11, boardData, "")
 					</section>
 				</div>
 				<!-- Global drag/drop overlay (hidden by default) -->
@@ -83,120 +92,119 @@ templ Dashboard(teamName string) {
 				</div>
 				<!-- Behavior -->
 				<script>
-					(function(){
-						var ALLOWED = ['.py','.js','.c'];
-						function hasAllowedExt(name){
-							var idx = name.lastIndexOf('.');
-							if (idx < 0) return false;
-							var ext = name.slice(idx).toLowerCase();
-							return ALLOWED.indexOf(ext) !== -1;
-						}
+                    (function(){
+                        var ALLOWED = ['.py','.js','.c'];
+                        function hasAllowedExt(name){
+                            var idx = name.lastIndexOf('.');
+                            if (idx < 0) return false;
+                            var ext = name.slice(idx).toLowerCase();
+                            return ALLOWED.indexOf(ext) !== -1;
+                        }
 
-						function setup(){
-							var input = document.getElementById('snake-file');
-							var btn = document.getElementById('upload-submit');
-							var nameEl = document.getElementById('selected-file');
-							var drop = document.getElementById('drop-zone');
-							var overlay = document.getElementById('drop-overlay');
-							var form = document.getElementById('upload-form');
-							if (!input || !btn || !nameEl || !drop) return;
+                        function setup(){
+                            var input = document.getElementById('snake-file');
+                            var btn = document.getElementById('upload-submit');
+                            var nameEl = document.getElementById('selected-file');
+                            var drop = document.getElementById('drop-zone');
+                            var overlay = document.getElementById('drop-overlay');
+                            var form = document.getElementById('upload-form');
+                            if (!input || !btn || !nameEl || !drop) return;
 
-							function update(){
-								var f = input.files && input.files[0];
-								if (f){
-									btn.disabled = false;
-									btn.classList.remove('opacity-50','cursor-not-allowed');
-									nameEl.textContent = f.name;
-								} else {
-									btn.disabled = true;
-									btn.classList.add('opacity-50','cursor-not-allowed');
-									nameEl.textContent = 'Nenhum arquivo';
-								}
-							}
+                            function update(){
+                                var f = input.files && input.files[0];
+                                if (f){
+                                    btn.disabled = false;
+                                    btn.classList.remove('opacity-50','cursor-not-allowed');
+                                    nameEl.textContent = f.name;
+                                } else {
+                                    btn.disabled = true;
+                                    btn.classList.add('opacity-50','cursor-not-allowed');
+                                    nameEl.textContent = 'Nenhum arquivo';
+                                }
+                            }
 
-							function showDrop(){ drop.classList.add('border-pink-400','bg-pink-50'); }
-							function hideDrop(){ drop.classList.remove('border-pink-400','bg-pink-50'); }
+                            function showDrop(){ drop.classList.add('border-pink-400','bg-pink-50'); }
+                            function hideDrop(){ drop.classList.remove('border-pink-400','bg-pink-50'); }
 
-							drop.addEventListener('click', function(){ input.click(); });
-							drop.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
-							drop.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
-							drop.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); hideDrop(); });
-							drop.addEventListener('drop', function(e){
-								e.preventDefault(); e.stopPropagation(); hideDrop();
-								var files = e.dataTransfer && e.dataTransfer.files;
-								if (!files || !files.length) return;
-								var f = files[0];
-								if (!hasAllowedExt(f.name)){
-									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
-									return;
-								}
-								// Assign the dropped file to the input
-								try {
-									var dt = new DataTransfer();
-									dt.items.add(f);
-									input.files = dt.files;
-									update();
-								} catch(_) {
-									// Fallback: just show name and enable button
-									nameEl.textContent = f.name;
-									btn.disabled = false;
-									btn.classList.remove('opacity-50','cursor-not-allowed');
-								}
-							});
+                            drop.addEventListener('click', function(){ input.click(); });
+                            drop.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
+                            drop.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); showDrop(); });
+                            drop.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); hideDrop(); });
+                            drop.addEventListener('drop', function(e){
+                                e.preventDefault(); e.stopPropagation(); hideDrop();
+                                var files = e.dataTransfer && e.dataTransfer.files;
+                                if (!files || !files.length) return;
+                                var f = files[0];
+                                if (!hasAllowedExt(f.name)){
+                                    try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+                                    return;
+                                }
+                                // Assign the dropped file to the input
+                                try {
+                                    var dt = new DataTransfer();
+                                    dt.items.add(f);
+                                    input.files = dt.files;
+                                    update();
+                                } catch(_) {
+                                    // Fallback: just show name and enable button
+                                    nameEl.textContent = f.name;
+                                    btn.disabled = false;
+                                    btn.classList.remove('opacity-50','cursor-not-allowed');
+                                }
+                            });
 
-							// Global overlay drag-n-drop for entire screen
-							var overCounter = 0; // handle nested dragenter/leaves
-							function showOverlay(){ if (overlay){ overlay.classList.remove('hidden'); overlay.classList.add('flex'); } }
-							function hideOverlay(){ if (overlay){ overlay.classList.add('hidden'); overlay.classList.remove('flex'); } }
+                            // Global overlay drag-n-drop for entire screen
+                            var overCounter = 0; // handle nested dragenter/leaves
+                            function showOverlay(){ if (overlay){ overlay.classList.remove('hidden'); overlay.classList.add('flex'); } }
+                            function hideOverlay(){ if (overlay){ overlay.classList.add('hidden'); overlay.classList.remove('flex'); } }
 
-							document.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); overCounter++; showOverlay(); });
-							document.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); });
-							document.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); overCounter = Math.max(0, overCounter-1); if (overCounter === 0) hideOverlay(); });
-							document.addEventListener('drop', function(e){
-								e.preventDefault(); e.stopPropagation();
-								overCounter = 0; hideOverlay();
-								if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
-								var f = e.dataTransfer.files[0];
-								if (!hasAllowedExt(f.name)){
-									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
-									return;
-								}
-								// If dropped outside the form, still capture the file
-								try {
-									var dt = new DataTransfer();
-									dt.items.add(f);
-									input.files = dt.files;
-									update();
-								} catch(_) {
-									nameEl.textContent = f.name;
-									btn.disabled = false;
-									btn.classList.remove('opacity-50','cursor-not-allowed');
-								}
-							});
+                            document.addEventListener('dragenter', function(e){ e.preventDefault(); e.stopPropagation(); overCounter++; showOverlay(); });
+                            document.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); });
+                            document.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); overCounter = Math.max(0, overCounter-1); if (overCounter === 0) hideOverlay(); });
+                            document.addEventListener('drop', function(e){
+                                e.preventDefault(); e.stopPropagation();
+                                overCounter = 0; hideOverlay();
+                                if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+                                var f = e.dataTransfer.files[0];
+                                if (!hasAllowedExt(f.name)){
+                                    try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+                                    return;
+                                }
+                                // If dropped outside the form, still capture the file
+                                try {
+                                    var dt = new DataTransfer();
+                                    dt.items.add(f);
+                                    input.files = dt.files;
+                                    update();
+                                } catch(_) {
+                                    nameEl.textContent = f.name;
+                                    btn.disabled = false;
+                                    btn.classList.remove('opacity-50','cursor-not-allowed');
+                                }
+                            });
 
-							input.addEventListener('change', function(){
-								var f = input.files && input.files[0];
-								if (f && !hasAllowedExt(f.name)){
-									try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
-									input.value = '';
-								}
-								update();
-							});
+                            input.addEventListener('change', function(){
+                                var f = input.files && input.files[0];
+                                if (f && !hasAllowedExt(f.name)){
+                                    try { document.body.dispatchEvent(new CustomEvent('show-toast', { detail: 'Formato inválido. Use .py, .js ou .c' })); } catch(_){ }
+                                    input.value = '';
+                                }
+                                update();
+                            });
 
-							// After HTMX upload completes, clear selection
-							if (form) {
-								form.addEventListener('htmx:afterOnLoad', function(){
-									try { input.value = ''; } catch(_){ }
-									update();
-								});
-							}
+                            // After HTMX upload completes, clear selection
+                            if (form) {
+                                form.addEventListener('htmx:afterOnLoad', function(){
+                                    try { input.value = ''; } catch(_){ }
+                                    update();
+                                });
+                            }
 
-							update();
-						}
-						if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
-					})();
-
-				</script>
+                            update();
+                        }
+                        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
+                    })();
+                </script>
 			</main>
 		</div>
 	}

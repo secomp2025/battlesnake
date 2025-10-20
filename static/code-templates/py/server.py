@@ -7,14 +7,14 @@ from flask import Flask
 from flask import request
 
 
-def run_server(handlers: typing.Dict, port: int, name="PADRAO"):
+def run_server(handlers: typing.Dict, port: int):
     app = Flask("Battlesnake")
 
     @app.get("/")
     def on_info():
         info = handlers["info"]()
 
-        info["author"] = name
+        info["author"] = "IFSP"
         info["apiversion"]: "1"
 
         return info

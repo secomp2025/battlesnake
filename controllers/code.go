@@ -47,3 +47,14 @@ func (c *CodeController) ListCodes(ctx context.Context) ([]database.Code, error)
 	}
 	return codes, nil
 }
+
+func (c *CodeController) GetCodeByTeam(ctx context.Context, team_id int64) (*database.Code, error) {
+	code_model, err := c.queries.GetCodeByTeam(ctx, team_id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &code_model, nil
+}

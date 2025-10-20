@@ -88,9 +88,15 @@ func main() {
 	http.HandleFunc("/logout", handlers.Logout)
 	http.HandleFunc("/status", handlers.StatusHandler)
 
-	http.HandleFunc("/create-game", handlers.CreateGameHandler)
+	http.HandleFunc("/create-game", handlers.CreateTeamGameHandler)
 	// handle /game/<game_id>
 	http.HandleFunc("/game/", handlers.GameHandler)
+
+	http.HandleFunc("/login-adm", handlers.PostLoginAdm)
+	http.HandleFunc("/adm", handlers.AdminHandler)
+
+	http.HandleFunc("/battle", handlers.HandleBattle)
+	http.HandleFunc("/rerun", handlers.RerunHandler)
 
 	ongoingCtx, stopOngoingGracefully := context.WithCancel(context.Background())
 	server := &http.Server{

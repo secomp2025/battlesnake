@@ -51,7 +51,7 @@ func (q *Queries) CreateSnake(ctx context.Context, arg CreateSnakeParams) (Snake
 const createTeam = `-- name: CreateTeam :one
 INSERT INTO teams (name, code_id)
 VALUES (?, ?)
-RETURNING id, name, code_id, created_at
+RETURNING id, name, is_admin, code_id, created_at
 `
 
 type CreateTeamParams struct {
@@ -65,6 +65,7 @@ func (q *Queries) CreateTeam(ctx context.Context, arg CreateTeamParams) (Team, e
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.IsAdmin,
 		&i.CodeID,
 		&i.CreatedAt,
 	)
@@ -129,6 +130,21 @@ func (q *Queries) GetCode(ctx context.Context, id int64) (Code, error) {
 	return i, err
 }
 
+const getCodeByTeam = `-- name: GetCodeByTeam :one
+SELECT c.id, c.code, c.created_at
+FROM teams t
+    INNER JOIN codes c ON t.code_id = c.id
+WHERE t.id = ?
+LIMIT 1
+`
+
+func (q *Queries) GetCodeByTeam(ctx context.Context, id int64) (Code, error) {
+	row := q.db.QueryRowContext(ctx, getCodeByTeam, id)
+	var i Code
+	err := row.Scan(&i.ID, &i.Code, &i.CreatedAt)
+	return i, err
+}
+
 const getSnake = `-- name: GetSnake :one
 SELECT id, path, lang, created_at, updated_at, team_id
 FROM snakes
@@ -152,7 +168,7 @@ func (q *Queries) GetSnake(ctx context.Context, id int64) (Snake, error) {
 }
 
 const getTeam = `-- name: GetTeam :one
-SELECT id, name, code_id, created_at
+SELECT id, name, is_admin, code_id, created_at
 FROM teams
 WHERE id = ?
 LIMIT 1
@@ -165,6 +181,7 @@ func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.IsAdmin,
 		&i.CodeID,
 		&i.CreatedAt,
 	)
@@ -172,7 +189,7 @@ func (q *Queries) GetTeam(ctx context.Context, id int64) (Team, error) {
 }
 
 const getTeamByCode = `-- name: GetTeamByCode :one
-SELECT id, name, code_id, created_at
+SELECT id, name, is_admin, code_id, created_at
 FROM teams
 WHERE code_id = ?
 LIMIT 1
@@ -184,6 +201,7 @@ func (q *Queries) GetTeamByCode(ctx context.Context, codeID int64) (Team, error)
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.IsAdmin,
 		&i.CodeID,
 		&i.CreatedAt,
 	)
@@ -293,7 +311,7 @@ func (q *Queries) ListTeamSnakes(ctx context.Context, teamID int64) ([]Snake, er
 }
 
 const listTeams = `-- name: ListTeams :many
-SELECT id, name, code_id, created_at
+SELECT id, name, is_admin, code_id, created_at
 FROM teams
 ORDER BY created_at ASC
 `
@@ -310,6 +328,7 @@ func (q *Queries) ListTeams(ctx context.Context) ([]Team, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.IsAdmin,
 			&i.CodeID,
 			&i.CreatedAt,
 		); err != nil {
@@ -368,7 +387,7 @@ UPDATE teams
 SET name = ?,
     code_id = ?
 WHERE id = ?
-RETURNING id, name, code_id, created_at
+RETURNING id, name, is_admin, code_id, created_at
 `
 
 type UpdateTeamParams struct {

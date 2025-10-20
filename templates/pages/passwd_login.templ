@@ -1,0 +1,40 @@
+package pages
+
+templ PasswordLogin(teamID int64) {
+	@layout("Localsnake • Cadastro") {
+		<div class="min-h-screen w-full relative overflow-hidden">
+			<!-- Playful background blobs -->
+			<div class="pointer-events-none absolute inset-0 -z-10">
+				<div class="absolute -top-24 -left-16 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl"></div>
+				<div class="absolute top-24 -right-16 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl"></div>
+			</div>
+			<div class="mx-auto max-w-6xl px-6 py-16">
+				<div class="mx-auto max-w-xl rounded-3xl bg-white/80 backdrop-blur border border-gray-200 shadow-sm p-8">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="h-10 w-10 rounded-xl bg-gradient-to-br from-pink-600 to-rose-600 grid place-items-center text-white text-xl">🐍</div>
+						<div>
+							<h1 class="text-2xl font-extrabold tracking-tight">Login Admin</h1>
+						</div>
+					</div>
+					<form class="space-y-5" hx-post="/login-adm" hx-target="body" hx-swap="outerHTML">
+						<div>
+							// hidden input team id
+							<input type="hidden" id="team_id" name="team_id" value={ teamID } hidden/>
+							<label for="password" class="block text-sm font-medium text-gray-700">Senha</label>
+							<input
+								type="password"
+								id="password"
+								name="password"
+								required
+								class="mt-1 w-full px-4 py-3 bg-white border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none rounded-lg transition"
+							/>
+						</div>
+						<div class="flex items-center gap-3">
+							<button type="submit" class="px-5 py-2.5 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition">Login</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

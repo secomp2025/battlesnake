@@ -4,7 +4,7 @@ import typing
 
 def info() -> typing.Dict:
     return {
-        "color": "#00ff00",
+        "color": "#754927",
         "head": "alligator",
         "tail": "rocket",
     }

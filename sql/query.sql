@@ -24,6 +24,12 @@ RETURNING *;
 -- name: DeleteCode :exec
 DELETE FROM codes
 WHERE code = ?;
+-- name: GetCodeByTeam :one
+SELECT c.*
+FROM teams t
+    INNER JOIN codes c ON t.code_id = c.id
+WHERE t.id = ?
+LIMIT 1;
 -------- TEAM --------
 -- name: GetTeam :one
 SELECT *

@@ -21,7 +21,7 @@ type SvgCalcParams struct {
 	Width        float64
 }
 
-templ Gameboard(w, h int, boardData BoardData) {
+templ Gameboard(w, h int, boardData BoardData, gameID string) {
 	{{
 	svgWidth := 2*GRID_BORDER + float64(w)*CELL_SIZE + math.Max(float64(w-1), 0)*float64(CELL_SPACING)
 	svgHeight := 2*GRID_BORDER + float64(h)*CELL_SIZE + math.Max(float64(h-1), 0)*float64(CELL_SPACING)
@@ -37,13 +37,20 @@ templ Gameboard(w, h int, boardData BoardData) {
 	}
 	}}
 	<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
-		<div class="flex gap-4 mb-2 items-center w-full ">
-			<div class="h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl">▶️</div>
-			<h2 class="text-xl font-bold text-gray-900">Simular</h2>
-			<div class="w-full flex items-center justify-end">
-				<button id="btn-refresh-game" type="submit" class="px-10 py-2.5 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition">Atualizar</button>
+		if gameID == "" {
+			<div class="flex gap-4 mb-2 items-center w-full ">
+				<div class="h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl">▶️</div>
+				<h2 class="text-xl font-bold text-gray-900">Simular</h2>
+				<div class=" flex flex-col gap-3 items-end w-full">
+					<button id="btn-refresh-game" type="submit" class="w-48 px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition">Atualizar</button>
+					<label for="ghost-checkbox" class="flex items-center gap-2 cursor-pointer" role="checkbox" aria-checked="false" aria-label="Simular com upload anterior" title="Simular com upload anterior">
+						Upload anterior
+						<input type="checkbox" name="ghost" id="ghost-checkbox" class="hidden peer"/>
+						<div class="w-4 h-4 rounded-full bg-gray-200 peer-checked:bg-gradient-to-r from-pink-600 to-pink-800 shadow"></div>
+					</label>
+				</div>
 			</div>
-		</div>
+		}
 		<div class="flex gap-4 flex-row">
 			<div class="flex-shrik w-full">
 				<div class="w-full flex justify-center">
@@ -146,37 +153,66 @@ templ Gameboard(w, h int, boardData BoardData) {
 				<svg id="gameboard" class="gameboard" viewBox={ svgViewBox }>
 					@SvgGrid(w, h, svgCalcParams)
 				</svg>
-				<script type="module">
-				    import initGameClient from "/static/board_client.js";
-					let gameClient = initGameClient({});
-
-					const btnRefreshGame = document.getElementById("btn-refresh-game");
-					btnRefreshGame.addEventListener("click", async () => {
-						try {
-							let res = await fetch("/create-game", {
-								method: "POST"
-							})
-
-							let gameId = await res.text();
-
-							await gameClient.connect(`/game/${gameId}`);
-						} catch (err) {
-							console.error("[Refresh] Error creating game:", err);
-						}
-					});
-
-
-				</script>
 			</div>
-			<aside class="max-w-sm w-full flex flex-col">
-				<h3 class="text-lg font-semibold text-gray-900 mb-2">Turno 0</h3>
-				<div class="space-y-2">
-					<div class="flex items-center gap-2">
-						<div class="h-5 w-5 rounded bg-red-500 grid place-items-center text-white text-xs font-bold">🍎</div>
-						<span class="text-sm text-gray-700">Comida</span>
-					</div>
-				</div>
+			<aside id="scoreboard" class="max-w-sm w-full flex flex-col">
+				<h3 class="text-lg font-semibold text-gray-900 mb-2">Turno <span id="scoreboard-turn">0</span></h3>
+				<div id="scoreboard-snakes"></div>
 			</aside>
 		</div>
+		if gameID == "" {
+			<script type="module">
+				import initGameClient from "/static/board_client.js";
+				import initScoreboard from "/static/scoreboard.js";
+
+				let scoreboard = initScoreboard();
+
+				let gameClient = initGameClient({
+					onRenderFrame: scoreboard.updateScoreboard,
+				});
+
+				const btnRefreshGame = document.getElementById("btn-refresh-game");
+				if (btnRefreshGame) {
+					btnRefreshGame.addEventListener("click", async () => {
+						const ghost = document.getElementById("ghost-checkbox").checked;
+						fetch("/create-game?ghost=" + ghost, {
+							method: "POST"
+						}).then((res) => {
+							// if no content
+							if (res.status == 204) {
+								throw new Error("Nenhuma Snake online");
+							}
+
+							if (res.status != 201) {
+								throw new Error("Erro ao criar jogo");
+							}
+							return res.text();
+						}).then(async (gameId) => {
+							await gameClient.connect(`/game/${gameId}`).catch((err) => {
+								console.error("[Refresh] Error connecting to game:", err);
+							});
+						}).catch((err) => {
+							showToast({message: err.message, type: "error"});
+						});
+					});
+				}
+			</script>
+		} else {
+			<script type="module">
+				let gameid = {{ gameID }};
+				import initGameClient from "/static/board_client.js";
+				import initScoreboard from "/static/scoreboard.js";
+
+				let scoreboard = initScoreboard();
+
+				let gameClient = initGameClient({
+					onRenderFrame: scoreboard.updateScoreboard,
+					clearStorage: true
+				});
+
+				gameClient.connect(`/game/${gameid}`).catch((err) => {
+					console.error("[Refresh] Error connecting to game:", err);
+				});
+			</script>
+		}
 	</section>
 }
