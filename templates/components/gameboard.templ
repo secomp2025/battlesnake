@@ -38,10 +38,12 @@ templ Gameboard(w, h int, boardData BoardData, gameID string) {
 	}}
 	<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
 		if gameID == "" {
-			<div class="flex gap-4 mb-2 items-center w-full ">
-				<div class="h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl">▶️</div>
-				<h2 class="text-xl font-bold text-gray-900">Simular</h2>
-				<div class=" flex flex-col gap-3 items-end w-full">
+			<div class="flex w-full ">
+				<div class="flex py-2 h-min items-center gap-2">
+					<div class="h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl">🔃</div>
+					<h2 class="text-xl font-bold text-gray-900">Simular</h2>
+				</div>
+				<div class=" flex flex-col gap-3 items-end flex-grow">
 					<button id="btn-refresh-game" type="submit" class="w-48 px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition">Atualizar</button>
 					<label for="ghost-checkbox" class="flex items-center gap-2 cursor-pointer" role="checkbox" aria-checked="false" aria-label="Simular com upload anterior" title="Simular com upload anterior">
 						Upload anterior

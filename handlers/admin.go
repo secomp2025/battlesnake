@@ -91,5 +91,23 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	templ.Handler(pages.Admin(modelTeamList)).ServeHTTP(w, r)
+    // build codes list with claimed status
+    codeList, err := codes.ListCodes(r.Context())
+    if err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    var modelCodes []models.Code
+    for _, c := range codeList {
+        t, err := teams.GetTeamByCode(r.Context(), c.ID)
+        if err != nil {
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
+        used := t != nil
+        modelCodes = append(modelCodes, models.Code{ID: c.ID, Code: c.Code, Used: used})
+    }
+
+	templ.Handler(pages.Admin(modelTeamList, modelCodes)).ServeHTTP(w, r)
 }

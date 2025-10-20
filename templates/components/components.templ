@@ -19,30 +19,32 @@ templ AppHeader(title string, showLogout bool) {
 	</header>
 }
 
-
 templ BoardPlaceholder() {
-    <section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
-        <div class="grid grid-cols-1 md:grid-cols-[1fr,360px] gap-6">
-            <div class="w-full">
-                <div class="bg-[#0d0a16] rounded-xl p-3 md:p-4">
-                    <div class="relative rounded-md overflow-hidden" style="height: 520px;">
-                        <div class="absolute inset-0" style="
+	<section class="rounded-3xl bg-white border border-gray-200 shadow-sm p-4 md:p-6">
+		<div class="grid grid-cols-1 md:grid-cols-[1fr,360px] gap-6">
+			<div class="w-full">
+				<div class="bg-[#0d0a16] rounded-xl p-3 md:p-4">
+					<div class="relative rounded-md overflow-hidden" style="height: 520px;">
+						<div
+							class="absolute inset-0"
+							style="
                             background-image:
                                 linear-gradient(#1f2937 1px, transparent 1px),
                                 linear-gradient(90deg, #1f2937 1px, transparent 1px);
                             background-size: 40px 40px, 40px 40px;
                             background-position: -1px -1px, -1px -1px;
                             background-color: #374151;
-                        "></div>
-                    </div>
-                </div>
-            </div>
-            <aside class="space-y-4">
-                <h3 class="text-center text-sm font-bold text-gray-300">TURN 0</h3>
-                <div class="rounded-lg bg-[#0d0a16] text-white p-3">Board (mock)</div>
-            </aside>
-        </div>
-    </section>
+                        "
+						></div>
+					</div>
+				</div>
+			</div>
+			<aside class="space-y-4">
+				<h3 class="text-center text-sm font-bold text-gray-300">TURN 0</h3>
+				<div class="rounded-lg bg-[#0d0a16] text-white p-3">Board (mock)</div>
+			</aside>
+		</div>
+	</section>
 }
 
 // StatusBadge renders a status label with contextual styles
@@ -65,4 +67,3 @@ templ StatusBadge(status string) {
 		</span>
 	}
 }
-

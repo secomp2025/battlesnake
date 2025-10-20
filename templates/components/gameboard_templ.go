@@ -68,7 +68,7 @@ func Gameboard(w, h int, boardData BoardData, gameID string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if gameID == "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex gap-4 mb-2 items-center w-full \"><div class=\"h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl\">▶️</div><h2 class=\"text-xl font-bold text-gray-900\">Simular</h2><div class=\" flex flex-col gap-3 items-end w-full\"><button id=\"btn-refresh-game\" type=\"submit\" class=\"w-48 px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition\">Atualizar</button> <label for=\"ghost-checkbox\" class=\"flex items-center gap-2 cursor-pointer\" role=\"checkbox\" aria-checked=\"false\" aria-label=\"Simular com upload anterior\" title=\"Simular com upload anterior\">Upload anterior <input type=\"checkbox\" name=\"ghost\" id=\"ghost-checkbox\" class=\"hidden peer\"><div class=\"w-4 h-4 rounded-full bg-gray-200 peer-checked:bg-gradient-to-r from-pink-600 to-pink-800 shadow\"></div></label></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex w-full \"><div class=\"flex py-2 h-min items-center gap-2\"><div class=\"h-10 w-10 rounded-xl bg-pink-100 text-pink-700 grid place-items-center text-xl\">🔃</div><h2 class=\"text-xl font-bold text-gray-900\">Simular</h2></div><div class=\" flex flex-col gap-3 items-end flex-grow\"><button id=\"btn-refresh-game\" type=\"submit\" class=\"w-48 px-4 py-2 bg-pink-600 text-white font-semibold rounded-lg shadow hover:bg-pink-700 transition\">Atualizar</button> <label for=\"ghost-checkbox\" class=\"flex items-center gap-2 cursor-pointer\" role=\"checkbox\" aria-checked=\"false\" aria-label=\"Simular com upload anterior\" title=\"Simular com upload anterior\">Upload anterior <input type=\"checkbox\" name=\"ghost\" id=\"ghost-checkbox\" class=\"hidden peer\"><div class=\"w-4 h-4 rounded-full bg-gray-200 peer-checked:bg-gradient-to-r from-pink-600 to-pink-800 shadow\"></div></label></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,7 +80,7 @@ func Gameboard(w, h int, boardData BoardData, gameID string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(svgViewBox)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 153, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 155, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func Gameboard(w, h int, boardData BoardData, gameID string) templ.Component {
 			}
 			templ_7745c5c3_Var3, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(gameID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 201, Col: 26}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/gameboard.templ`, Line: 203, Col: 26}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {

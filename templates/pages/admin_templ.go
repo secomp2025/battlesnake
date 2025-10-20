@@ -13,7 +13,7 @@ import (
 	"github.com/secomp2025/localsnake/templates/components"
 )
 
-func Admin(teams []models.Team) templ.Component {
+func Admin(teams []models.Team, codes []models.Code) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -46,7 +46,7 @@ func Admin(teams []models.Team) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen w-full relative overflow-hidden\"><div class=\"pointer-events-none absolute inset-0 -z-10\"><div class=\"absolute -top-32 -left-24 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl\"></div><div class=\"absolute top-24 -right-20 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl\"></div><div class=\"absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl\"></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen w-full relative\"><div class=\"pointer-events-none absolute inset-0 -z-10 overflow-hidden\"><div class=\"absolute -top-32 -left-24 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl\"></div><div class=\"absolute top-24 -right-20 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl\"></div><div class=\"absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl\"></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +54,7 @@ func Admin(teams []models.Team) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<main class=\"mx-auto max-w-6xl px-6 py-10 space-y-8\"><div class=\"flex items-center justify-end\"><a href=\"/\" class=\"inline-flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-800\"><span>Dashboard</span> <span>↗</span></a></div><section class=\"rounded-3xl bg-white/80 backdrop-blur border border-pink-200/60 shadow-sm p-7\"><div class=\"flex flex-col md:flex-row md:items-center md:justify-between gap-6\"><div class=\"space-y-2\"><div class=\"inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold\"><span>🛠️</span> <span>Painel Administrativo</span></div><h1 class=\"text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900\">Times e Snakes</h1><p class=\"text-sm text-gray-600\">Gerencie as snakes enviadas pelos times. Você pode forçar uma nova execução e selecionar múltiplas para criar partidas.</p></div></div></section><section class=\"rounded-3xl bg-white border border-gray-200 shadow-sm p-6\"><div class=\"flex items-center mb-3\"><div class=\"relative\"><input type=\"text\" id=\"admin-search\" placeholder=\"Buscar time...\" class=\"max-w-64 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400\"> <span class=\"absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm\">⌘K</span></div></div><div class=\"flex flex-wrap items-center gap-4 mb-4\"><label class=\"inline-flex items-center gap-2 text-sm text-gray-700\"><input id=\"select-all\" type=\"checkbox\" class=\"h-4 w-4 rounded border-gray-300\"> Selecionar todos</label><div class=\"ml-auto flex items-center gap-3\"><span id=\"selected-count\" class=\"text-sm text-gray-500\">0 selecionados</span> <a role=\"button\" id=\"bulk-create\" class=\"px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-700 transition opacity-50 cursor-not-allowed pointer-events-none\" aria-disabled=\"true\">Criar jogo com selecionados</a></div></div><div class=\"overflow-x-auto rounded-xl border border-gray-200\"><table class=\"min-w-full divide-y divide-gray-200\"><thead class=\"bg-gray-50\"><tr><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\"><span class=\"sr-only\">Selecionar</span></th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Time</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Código</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Snake</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Status</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Atualizado</th><th class=\"px-4 py-3 text-right text-xs font-semibold text-gray-600\">Ações</th></tr></thead> <tbody class=\"divide-y divide-gray-100 bg-white\" id=\"teams-table-body\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<main class=\"mx-auto max-w-6xl px-6 py-10 space-y-8\"><div class=\"flex items-center justify-end\"><a href=\"/\" class=\"inline-flex items-center gap-2 text-sm font-semibold text-pink-700 hover:text-pink-800\"><span>Dashboard</span> <span>↗</span></a></div><section class=\"rounded-3xl bg-white/80 backdrop-blur border border-pink-200/60 shadow-sm p-7\"><div class=\"flex flex-col md:flex-row md:items-center md:justify-between gap-6\"><div class=\"space-y-2\"><div class=\"inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold\"><span>🛠️</span> <span>Painel Administrativo</span></div><h1 class=\"text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900\">Times e Snakes</h1><p class=\"text-sm text-gray-600\">Gerencie as snakes enviadas pelos times. Você pode forçar uma nova execução e selecionar múltiplas para criar partidas.</p></div></div></section><section class=\"rounded-3xl bg-white border border-gray-200 shadow-sm p-6\"><div class=\"flex items-center mb-3\"><div class=\"relative\"><input type=\"text\" id=\"admin-search\" placeholder=\"Buscar time...\" class=\"max-w-64 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400\"></div></div><div class=\"flex flex-wrap items-center gap-4 mb-4\"><label class=\"inline-flex items-center gap-2 text-sm text-gray-700\"><input id=\"select-all\" type=\"checkbox\" class=\"h-4 w-4 rounded border-gray-300\"> Selecionar todos</label><div class=\"ml-auto flex items-center gap-3\"><span id=\"selected-count\" class=\"text-sm text-gray-500\">0 selecionados</span> <a role=\"button\" id=\"bulk-create\" class=\"px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold shadow hover:bg-indigo-700 transition opacity-50 cursor-not-allowed pointer-events-none\" aria-disabled=\"true\">Criar jogo com selecionados</a></div></div><div class=\"overflow-x-auto rounded-xl border border-gray-200\"><table class=\"min-w-full divide-y divide-gray-200\"><thead class=\"bg-gray-50\"><tr><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\"><span class=\"sr-only\">Selecionar</span></th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Time</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Código</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Snake</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Status</th><th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-600\">Atualizado</th><th class=\"px-4 py-3 text-right text-xs font-semibold text-gray-600\">Ações</th></tr></thead> <tbody class=\"divide-y divide-gray-100 bg-white\" id=\"teams-table-body\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -247,7 +247,7 @@ func Admin(teams []models.Team) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</tbody></table></div><div class=\"mt-4 flex items-center justify-between text-xs text-gray-500\"><div>Dica: use a busca acima para filtrar por nome do time.</div><div>Total de times: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</tbody></table></div><div class=\"mt-4 flex items-center justify-between text-xs text-gray-500\"><div>Dica: Recarregue a página para atualizar o estado após forçar rerun.</div><div>Total de times: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -260,7 +260,118 @@ func Admin(teams []models.Team) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div></section><script>\n                    (function(){\n                        function $(sel, ctx){ return (ctx||document).querySelector(sel); }\n                        function $all(sel, ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(sel)); }\n                        function updateSelected(){\n                            var boxes = $all('.team-checkbox:not(:disabled)');\n                            var checked = boxes.filter(function(b){ return b.checked; });\n\n                            var count = checked.length;\n                            var countEl = $('#selected-count');\n                            var bulkBtn = $('#bulk-create');\n                            if (countEl) countEl.textContent = (count || 0) + ' selecionados';\n                            if (bulkBtn){\n                                var href = '/battle?snake_ids=' + checked.map(function(b){ return b.value; }).join(',');\n                                if (count === 0) {\n\t\t\t\t\t\t\t\t\tbulkBtn.removeAttribute('target');\n                                    bulkBtn.removeAttribute('href');\n                                    bulkBtn.setAttribute('aria-disabled','true');\n                                    bulkBtn.classList.add('opacity-50','cursor-not-allowed','pointer-events-none');\n                                } else {\n\t\t\t\t\t\t\t\t\tbulkBtn.setAttribute('target', '_blank');\n                                    bulkBtn.setAttribute('href', href);\n                                    bulkBtn.removeAttribute('aria-disabled');\n                                    bulkBtn.classList.remove('opacity-50','cursor-not-allowed','pointer-events-none');\n                                }\n                            }\n                            var allBox = $('#select-all');\n                            if (allBox){ allBox.checked = (count > 0 && count === boxes.length); allBox.indeterminate = (count > 0 && count < boxes.length); }\n                        }\n                        function setup(){\n                            var allBox = document.getElementById('select-all');\n                            var table = document.getElementById('teams-table-body');\n                            var search = document.getElementById('admin-search');\n                            if (allBox){\n                                allBox.addEventListener('change', function(){\n                                    var boxes = $all('.team-checkbox:not(:disabled)');\n                                    boxes.forEach(function(b){ b.checked = allBox.checked; });\n                                    updateSelected();\n                                });\n                            }\n                            // Guard anchor navigation when disabled\n                            var bulkBtn = document.getElementById('bulk-create');\n                            if (bulkBtn){\n                                bulkBtn.addEventListener('click', function(e){\n                                    var disabled = bulkBtn.getAttribute('aria-disabled') === 'true';\n                                    if (disabled || !bulkBtn.getAttribute('href')){\n                                        e.preventDefault();\n                                        e.stopPropagation();\n                                    }\n                                });\n                            }\n                            document.addEventListener('click', function(e){\n                                var btn = e.target && e.target.closest ? e.target.closest('.rerun-btn') : null;\n                                if (!btn) return;\n                                e.preventDefault();\n                                var id = btn.getAttribute('data-snake-id');\n                                if (!id) return;\n                                btn.disabled = true;\n                                btn.classList.add('opacity-50','cursor-wait');\n                                fetch('/rerun', {\n                                    method: 'POST',\n                                    headers: { 'Content-Type': 'application/json' },\n                                    body: JSON.stringify({ snake_id: Number(id) })\n                                }).then(function(res){\n                                    if (!res.ok) throw new Error('request failed');\n                                }).then(function(){\n                                    btn.textContent = 'Rerun solicitado';\n                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);\n                                }).catch(function(){\n                                    btn.textContent = 'Falha';\n                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);\n                                }).finally(function(){\n                                    btn.disabled = false;\n                                    btn.classList.remove('cursor-wait','opacity-50');\n                                });\n                            });\n                            document.addEventListener('change', function(e){\n                                if (e && e.target && e.target.classList && e.target.classList.contains('team-checkbox')){\n                                    updateSelected();\n                                }\n                            });\n                            if (search){\n                                search.addEventListener('input', function(){\n                                    var q = (search.value || '').toLowerCase();\n                                    $all('tr.team-row', table).forEach(function(row){\n                                        var nameEl = row.querySelector('td:nth-child(2) div');\n                                        var name = nameEl ? nameEl.textContent.toLowerCase() : '';\n                                        row.style.display = name.indexOf(q) >= 0 ? '' : 'none';\n                                    });\n                                });\n                            }\n                            updateSelected();\n                        }\n                        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }\n                    })();\n                </script></main></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div></section><section class=\"rounded-3xl bg-white border border-gray-200 shadow-sm p-6\"><div class=\"flex items-center justify-between mb-4\"><div class=\"space-y-1\"><h2 class=\"text-xl font-bold text-gray-900\">Códigos</h2><p class=\"text-xs text-gray-500\">Lista de códigos disponíveis e atribuídos.</p></div><div class=\"flex items-center gap-2 text-xs\"><span class=\"px-2 py-1 rounded bg-gray-100 text-gray-700 border border-gray-200\">Total: ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(len(codes))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin.templ`, Line: 149, Col: 107}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span> <span class=\"px-2 py-1 rounded bg-red-100 text-red-800 border border-red-200\">Atribuídos: ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(func() int {
+				n := 0
+				for _, c := range codes {
+					if c.Used {
+						n++
+					}
+				}
+				return n
+			}())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin.templ`, Line: 150, Col: 177}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span> <span class=\"px-2 py-1 rounded bg-sky-100 text-sky-800 border border-sky-200\">Disponíveis: ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(func() int {
+				n := 0
+				for _, c := range codes {
+					if !c.Used {
+						n++
+					}
+				}
+				return n
+			}())
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin.templ`, Line: 151, Col: 179}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span></div></div><div class=\"flex flex-wrap items-center gap-3 mb-4\"><div class=\"relative\"><input id=\"codes-search\" type=\"text\" placeholder=\"Buscar código...\" class=\"w-64 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400\"></div><div class=\"ml-auto inline-flex items-center gap-1 text-xs\" id=\"codes-filters\"><button data-filter=\"all\" class=\"px-2.5 py-1 rounded border border-gray-200 bg-gray-50 text-gray-700\">Todos</button> <button data-filter=\"available\" class=\"px-2.5 py-1 rounded border border-sky-200 bg-sky-50 text-sky-800\">Disponíveis</button> <button data-filter=\"claimed\" class=\"px-2.5 py-1 rounded border border-red-200 bg-red-50 text-red-800\">Atribuídos</button></div></div><div class=\"max-h-80 overflow-auto rounded-lg border border-gray-200\" id=\"codes-list\"><table class=\"min-w-full divide-y divide-gray-200\"><thead class=\"bg-gray-50 sticky top-0 z-10\"><tr><th class=\"px-4 py-2 text-left text-xs font-semibold text-gray-600\">Código</th><th class=\"px-4 py-2 text-left text-xs font-semibold text-gray-600\">Status</th></tr></thead> <tbody class=\"divide-y divide-gray-100 bg-white\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, c := range codes {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<tr class=\"code-row\" data-status=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var15 string
+				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(func() string {
+					if c.Used {
+						return "claimed"
+					}
+					return "available"
+				}())
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin.templ`, Line: 175, Col: 114}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><td class=\"px-4 py-2 font-mono text-sm text-gray-900\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var16 string
+				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.Code)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/admin.templ`, Line: 176, Col: 72}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"px-4 py-2\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if c.Used {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<span class=\"inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold bg-red-100 text-red-800 border border-red-200\">Atribuído</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span class=\"inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-200\">Disponível</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</td></tr>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</tbody></table></div><script>\n                        (function(){\n                            var search = document.getElementById('codes-search');\n                            var list = document.getElementById('codes-list');\n                            var filters = document.getElementById('codes-filters');\n                            var mode = 'all';\n                            function apply(){\n                                var q = (search && search.value || '').toLowerCase();\n                                var rows = list ? list.querySelectorAll('tr.code-row') : [];\n                                rows.forEach(function(row){\n                                    var code = (row.querySelector('td:first-child')?.textContent || '').toLowerCase();\n                                    var okText = code.indexOf(q) >= 0;\n                                    var okMode = (mode==='all') || (row.getAttribute('data-status')===mode);\n                                    row.style.display = (okText && okMode) ? '' : 'none';\n                                });\n                            }\n                            if (search) search.addEventListener('input', apply);\n                            if (filters) filters.addEventListener('click', function(e){\n                                var btn = e.target.closest('button[data-filter]');\n                                if (!btn) return;\n                                mode = btn.getAttribute('data-filter');\n                                filters.querySelectorAll('button').forEach(function(b){ b.classList.remove('ring-2','ring-pink-400'); });\n                                btn.classList.add('ring-2','ring-pink-400');\n                                apply();\n                            });\n                            apply();\n                        })();\n                    </script></section><script>\n                    (function(){\n                        function $(sel, ctx){ return (ctx||document).querySelector(sel); }\n                        function $all(sel, ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(sel)); }\n                        function updateSelected(){\n                            var boxes = $all('.team-checkbox:not(:disabled)');\n                            var checked = boxes.filter(function(b){ return b.checked; });\n\n                            var count = checked.length;\n                            var countEl = $('#selected-count');\n                            var bulkBtn = $('#bulk-create');\n                            if (countEl) countEl.textContent = (count || 0) + ' selecionados';\n                            if (bulkBtn){\n                                var href = '/battle?snake_ids=' + checked.map(function(b){ return b.value; }).join(',');\n                                if (count === 0) {\n\t\t\t\t\t\t\t\t\tbulkBtn.removeAttribute('target');\n                                    bulkBtn.removeAttribute('href');\n                                    bulkBtn.setAttribute('aria-disabled','true');\n                                    bulkBtn.classList.add('opacity-50','cursor-not-allowed','pointer-events-none');\n                                } else {\n\t\t\t\t\t\t\t\t\tbulkBtn.setAttribute('target', '_blank');\n                                    bulkBtn.setAttribute('href', href);\n                                    bulkBtn.removeAttribute('aria-disabled');\n                                    bulkBtn.classList.remove('opacity-50','cursor-not-allowed','pointer-events-none');\n                                }\n                            }\n                            var allBox = $('#select-all');\n                            if (allBox){ allBox.checked = (count > 0 && count === boxes.length); allBox.indeterminate = (count > 0 && count < boxes.length); }\n                        }\n                        function setup(){\n                            var allBox = document.getElementById('select-all');\n                            var table = document.getElementById('teams-table-body');\n                            var search = document.getElementById('admin-search');\n                            if (allBox){\n                                allBox.addEventListener('change', function(){\n                                    var boxes = $all('.team-checkbox:not(:disabled)');\n                                    boxes.forEach(function(b){ b.checked = allBox.checked; });\n                                    updateSelected();\n                                });\n                            }\n                            // Guard anchor navigation when disabled\n                            var bulkBtn = document.getElementById('bulk-create');\n                            if (bulkBtn){\n                                bulkBtn.addEventListener('click', function(e){\n                                    var disabled = bulkBtn.getAttribute('aria-disabled') === 'true';\n                                    if (disabled || !bulkBtn.getAttribute('href')){\n                                        e.preventDefault();\n                                        e.stopPropagation();\n                                    }\n                                });\n                            }\n                            document.addEventListener('click', function(e){\n                                var btn = e.target && e.target.closest ? e.target.closest('.rerun-btn') : null;\n                                if (!btn) return;\n                                e.preventDefault();\n                                var id = btn.getAttribute('data-snake-id');\n                                if (!id) return;\n                                btn.disabled = true;\n                                btn.classList.add('opacity-50','cursor-wait');\n                                fetch('/rerun', {\n                                    method: 'POST',\n                                    headers: { 'Content-Type': 'application/json' },\n                                    body: JSON.stringify({ snake_id: Number(id) })\n                                }).then(function(res){\n                                    if (!res.ok) throw new Error('request failed');\n                                }).then(function(){\n                                    btn.textContent = 'Rerun solicitado';\n                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);\n                                }).catch(function(){\n                                    btn.textContent = 'Falha';\n                                    setTimeout(function(){ btn.textContent = 'Forçar rerun'; }, 1500);\n                                }).finally(function(){\n                                    btn.disabled = false;\n                                    btn.classList.remove('cursor-wait','opacity-50');\n                                });\n                            });\n                            document.addEventListener('change', function(e){\n                                if (e && e.target && e.target.classList && e.target.classList.contains('team-checkbox')){\n                                    updateSelected();\n                                }\n                            });\n                            if (search){\n                                search.addEventListener('input', function(){\n                                    var q = (search.value || '').toLowerCase();\n                                    $all('tr.team-row', table).forEach(function(row){\n                                        var nameEl = row.querySelector('td:nth-child(2) div');\n                                        var name = nameEl ? nameEl.textContent.toLowerCase() : '';\n                                        row.style.display = name.indexOf(q) >= 0 ? '' : 'none';\n                                    });\n                                });\n                            }\n                            updateSelected();\n                        }\n                        if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }\n                    })();\n                </script></main></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

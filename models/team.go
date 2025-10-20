@@ -16,3 +16,9 @@ type Snake struct {
 	UpdatedAt time.Time
 	Status    string
 }
+
+type Code struct {
+	ID   int64
+	Code string
+	Used bool
+}

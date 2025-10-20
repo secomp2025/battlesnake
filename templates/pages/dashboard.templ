@@ -4,9 +4,9 @@ import "github.com/secomp2025/localsnake/templates/components"
 
 templ Dashboard(teamName string, isAdmin bool) {
 	@layout("Dashboard") {
-		<div class="min-h-screen w-full relative overflow-hidden">
+		<div class="min-h-screen w-full relative ">
 			<!-- Background playful blobs -->
-			<div class="pointer-events-none absolute inset-0 -z-10">
+			<div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
 				<div class="absolute -top-32 -left-24 h-80 w-80 rounded-full bg-pink-300/40 blur-3xl"></div>
 				<div class="absolute top-24 -right-20 h-96 w-96 rounded-full bg-purple-300/40 blur-3xl"></div>
 				<div class="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl"></div>
@@ -28,16 +28,19 @@ templ Dashboard(teamName string, isAdmin bool) {
 						<div class="space-y-2">
 							<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-semibold">
 								<span>🐍</span>
-								<span>Bem-vindo, time</span>
+								<span>Bem-vindo</span>
 							</div>
 							<h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">{ teamName }</h1>
 							<p class="text-sm text-gray-600">Envie a sua Snake e acompanhe o status em tempo real.</p>
 						</div>
-						<div class="flex items-center gap-3">
-							<span class="text-sm text-gray-500">Status</span>
-							<span id="snake-status" hx-get="/status" hx-trigger="load, every 1.5s" hx-swap="innerHTML">
-								@components.StatusBadge("loading")
-							</span>
+						<div class="flex items-center gap-3"></div>
+					</div>
+					<div class="mt-4 p-5 rounded-2xl bg-gray-100 border border-gray-200 shadow">
+						<p class="text-sm text-gray-700">Faça o download de um projeto inicial para começar.</p>
+						<div class="flex flex-wrap gap-3 mt-3">
+							<a href="/static/code-templates/c/starter.zip" class="px-5 py-2 rounded-full text-sm font-bold text-gray-100 bg-slate-600" style="box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.9);">C</a>
+							<a href="/static/code-templates/js/starter.zip" class="px-5 py-2 rounded-full text-sm font-bold text-gray-100 bg-yellow-600" style="box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.9);">JavaScript</a>
+							<a href="/static/code-templates/py/starter.zip" class="px-5 py-2 rounded-full text-sm font-bold text-gray-100 bg-emerald-600" style="box-shadow: 6px 6px 12px rgba(0,0,0,0.08), -6px -6px 12px rgba(255,255,255,0.9);">Python</a>
 						</div>
 					</div>
 				</section>
@@ -49,6 +52,12 @@ templ Dashboard(teamName string, isAdmin bool) {
 							<div>
 								<h2 class="text-xl font-bold text-gray-900">Enviar sua Snake</h2>
 								<p class="text-sm text-gray-600">Solte o arquivo em qualquer lugar da tela ou use o botão abaixo.</p>
+							</div>
+							<div class="ml-auto flex items-center gap-3 rounded-full px-4 py-2" style="background:#f3f4f6; box-shadow: 8px 8px 16px rgba(0,0,0,0.08), -8px -8px 16px rgba(255,255,255,0.8);">
+								<span class="text-xs text-gray-600">Status</span>
+								<span id="snake-status" hx-get="/status" hx-trigger="load, every 1.5s" hx-swap="innerHTML">
+									@components.StatusBadge("loading")
+								</span>
 							</div>
 						</div>
 						<form
@@ -204,7 +213,7 @@ templ Dashboard(teamName string, isAdmin bool) {
                         }
                         if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', setup); } else { setup(); }
                     })();
-                </script>
+				</script>
 			</main>
 		</div>
 	}
